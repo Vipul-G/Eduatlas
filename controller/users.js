@@ -4,7 +4,7 @@ const User = require('../model/user.model');
 const jwt = require("jsonwebtoken");
 
 const schema = require('./service/joi');
-
+const response = require('./service/response');
 
 exports.creatUser = async (req, res, next) => {
 
@@ -104,11 +104,75 @@ exports.findUser = async (req, res) => {
   }
 }
 
-exports.deleteAllUsers = async (req, res, next) => {
-  await User.deleteMany({});
-  res.status(200).json({ 'message': 'All deleted' })
+
+exports.sendOtp = async (req, res, next) => {
+  try {
+
+    if (!req.body.phone) {
+      response(res, 400, 'Phone number not provided');
+      return;
+    }
+    const phone = req.body.phone;
+
+    const user = await User.findOne({phone})
+
+    if(!user) {
+      response(res, 404, 'User not found');
+      return;
+    }
+    exports.otp = 1234;
+    response(res, 200, 'OTP has been send to ' + phone);
+  } catch(error) {
+    console.log(error);
+    response(res, 500, 'Internal server error');
+  }
+};
+
+// exports.forgotPassword = async (req, res, next) => {
+
+//   if(!req.body.otp) {
+//     response(res, 400, 'No OTP provided')
+//   }
+
+//   if (req.body.otp === otp) {
+//     response(res, 200, 'OTP validation successfull')
+//   } else {
+//     response(res, 404, ' OTP validation failed')
+//   }
+
+// }
+
+exports.resetPassword = async (req, res, next) => {
+
+  try {
+    const {error, value} = schema('resetPassword').validate(req.body);
+
+    if (error) {
+      response(res, 400, 'Wrong/Insufficient parameters provided');
+      return;
+    }
+
+    const updatedUser = await User.updateOne({phone : req.body.phone}, {password : req.body.password});
+
+    if(updatedUser) {
+      response(res, 201, 'User updated successfully');
+    }
+
+
+  } catch(error) {
+    console.log(error);
+    response(res, 500, 'Internal Server error');
+  }
+
 }
 
-exports.getAllUsers = (req, res, next) => {
-  User.find().then(users => res.send(users));
-}
+
+
+// exports.deleteAllUsers = async (req, res, next) => {
+//   await User.deleteMany({});
+//   res.status(200).json({ 'message': 'All deleted' })
+// }
+
+// exports.getAllUsers = (req, res, next) => {
+//   User.find().then(users => res.send(users));
+// }

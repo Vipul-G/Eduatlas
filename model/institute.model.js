@@ -7,7 +7,7 @@ const instituteSchemsa = new Schema({
         logo:  { data: Buffer, contentType: String},
         name: { type: String, required: [true, 'Institute name is required'] },
         contactNumber: { type: Number, required: [true, 'Phone is required'] },
-    }),
+    }, {_id: false}),
 
     address: new Schema({
         addressLine: { type: String },
@@ -15,7 +15,7 @@ const instituteSchemsa = new Schema({
         state: { type: String},
         city: { type: String },
         pin: { type: Number }
-    }),
+    }, {_id: false}),
 
     location: {
         type: {
@@ -31,7 +31,9 @@ const instituteSchemsa = new Schema({
 
     category: [String],
 
-    metaTag: [String]
+    metaTag: [String],
+
+    userPhone: { type: Number, required: [true, 'User phone is require for aggregation'] }
 
 });
 

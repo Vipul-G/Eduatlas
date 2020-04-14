@@ -21,6 +21,19 @@ authRouter.post('/login', userConstroller.loginUser);
 */
 authRouter.get('/:phone', userConstroller.findUser);
 
+/* 
+* @GET
+* send OTP. 
+*/
+authRouter.get('/sendOTP', userConstroller.sendOtp);
+
+/* 
+* @PATCH
+* reset password. 
+*/
+authRouter.patch('/resetPassword', require('../middleware/checkOTP'), userConstroller.resetPassword);
+
+
 // authRouter.delete('', userConstroller.deleteAllUsers);
 
 // authRouter.get('', userConstroller.getAllUsers);

@@ -66,6 +66,13 @@ const schema = {
 
       metaTag : joi.array()
       
+    }),
+
+    resetPassword: joi.object({
+      phone: joi.custom(checkPhone, 'Phone number validator').required(),
+      password: joi.string()
+      .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
+      otp: joi.number().required()
     })
   }
 
