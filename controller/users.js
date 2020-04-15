@@ -69,7 +69,7 @@ exports.loginUser = async (req, res, next) => {
       }
       const token = jwt.sign({phone: fetchedUser.phone, userId: fetchedUser._id},
                       process.env.JWT_KEY, // specify jwt key in nodemon.json confige file in root directory
-                      { expiresIn: "1h"  } // login session will expire in 1 hour
+                      { expiresIn: "3h"  } // login session will expire in 1 hour
                             );
       res.status(200).json({
         token,

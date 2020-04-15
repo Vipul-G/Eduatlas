@@ -6,7 +6,8 @@ const extractFile = require('../middleware/file');
 
 instituteRouter.post('/addInstitute', checkAuth, checkPayment, extractFile, instituteController.addInstitute);
 instituteRouter.get('/all', checkAuth, checkPayment, instituteController.getAllInstitutes);
-instituteRouter.delete('/:contactNumber', checkAuth, instituteController.deleteInstitute);
-instituteRouter.get('/oneInstitute/:contactNumber', checkAuth, instituteController.getOneInstitute);
+instituteRouter.delete('/:id', checkAuth, instituteController.deleteInstitute);
+instituteRouter.get('/oneInstitute/:id', checkAuth, instituteController.getOneInstitute);
+instituteRouter.patch('/updateInstitute/:id', checkAuth, instituteController.updateInstitute);
 
 module.exports = instituteRouter; 

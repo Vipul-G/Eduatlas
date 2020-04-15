@@ -4,8 +4,6 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 
 const indexRouter = require('./routes/index');
-const usersRouter = require('./routes/users');
-const instituteRouter = require('./routes/institute')
 
 const cors = require('cors');
 const mongoose = require('mongoose');
@@ -17,7 +15,7 @@ app.use(cors());
 app.use(logger('dev'));
 app.use(express.json({limit: '100mb'}));
 app.use(express.urlencoded({ extended: true, limit: '100mb' }));
-app.use(express.static(path.join('Server/images')));
+app.use('/images',express.static(path.join('Server/images')));
 app.use(cookieParser());
 
 
@@ -38,7 +36,8 @@ mongoose.connect( "mongodb://localhost/Eduatals" , {
 
 
 app.use('/', indexRouter);
-app.use('/users', usersRouter);
-app.use('/institute', instituteRouter);
+app.use('/users', require('./routes/users'));
+app.use('/institute', require('./routes/institute'));
+app.use('/student', require('./routes/student'));
 
 module.exports = app;

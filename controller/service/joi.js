@@ -2,7 +2,7 @@ const joi = require('@hapi/joi');
 
 function checkPhone(value, helpers) {
 
-    if (value.toString().length !== 10 || value == undefined) {
+    if (((typeof value) != 'number') || value.toString().length !== 10 || value == undefined) {
       return helpers.error('Incorrect Phone number')
     }
   
@@ -73,6 +73,23 @@ const schema = {
       password: joi.string()
       .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
       otp: joi.number().required()
+    }),
+
+    addStudent: joi.object({
+      instituteId : joi.required(),
+      basicDetails: joi.object({
+        name: joi.required(),
+        rollNumber: joi.required(),
+        contactNumber: joi.custom(checkPhone, 'Phone number validator').required()
+      }),
+      parentDetails: joi.object({
+        name: joi.required(),
+        contactNumber: joi.custom(checkPhone, 'Phone number validator').required()
+      }),
+      courseDetails: joi.object({
+        course: joi.required()
+      })
+      
     })
   }
 

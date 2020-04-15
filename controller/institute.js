@@ -4,17 +4,17 @@ const Institute = require('../model/institute.model');
 
 const schema = require('./service/joi');
 const response = require('./service/response');
-
+const fs = require('fs');
 exports.addInstitute = async (req, res, next) => {
     try {
         req.body.basicInfo = JSON.parse(req.body.basicInfo);
         req.body.address = JSON.parse(req.body.address);
         req.body.category = JSON.parse(req.body.category);
         req.body.metaTag = JSON.parse(req.body.metaTag);
-        console.log(req.body);
+        console.log('MULTER',req.file);
         delete req.body.logo;
         const {error, value} = schema('addInstitute').validate(req.body);
-        if(error) {
+        if(error) { 
             console.log(error);
             res.status(400).json({
              message: 'Insufficient/Wrong parameters provided'
@@ -29,8 +29,13 @@ exports.addInstitute = async (req, res, next) => {
 
         const tempObj = Object.assign({}, req.body);
         tempObj.userPhone = req.user.phone;
+
+
         
-        institute = await Institute.create(tempObj);
+        institute = new Institute;
+
+        institute.basicInfo = Object.assign({}, req.body.basicInfo);
+        // institute.basicInfo.logo.data = ---------------------------------------------------pending
 
 
         response(res, 201, 'Institute added successfully');
@@ -86,3 +91,25 @@ exports.getAllInstitutes = async (req, res, next) => {
     }
 
 }
+
+exports.updateInstitute = async (req, res, next) => {
+
+try {
+
+    if (!req.params.contactNumber) {
+        response(res, 400, 'Institute contact number not provided');
+        return;
+    }
+
+    const contactNumber = req.params.contactNumber;
+
+    const updatedInstitute = await Institute.updateOne({ "basicInfo.contactNumber" : contactNumber }, { $set: req.body }, { new: true });
+
+    res.status(201).json({updatedInstitute});
+
+} catch(error) {
+    console.log(error);
+    response(res, 500, 'Internal server error while updating the institutes');
+}
+
+};
