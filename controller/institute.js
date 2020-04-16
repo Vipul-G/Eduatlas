@@ -72,8 +72,11 @@ exports.addInstitute = async (req, res, next) => {
 exports.deleteInstitute = async (req, res, next) => {
 
     try {
-        const contactNumber = req.params.contactNumber;
-        await Institute.deleteOne({"basicInfo.contactNumber" : contactNumber});
+        const id = req.params.id;
+        if(!id) {
+            return response(res, 400, 'Intitute Id not provided');
+        }
+        await Institute.findByIdAndDelete(id);
         response(res, 202, 'Institute deleted successfully'); 
     } catch(error) {
         console.log(error);
@@ -86,13 +89,12 @@ exports.getOneInstitute = async (req, res, next) => {
     try {
 
         console.log('get req hit')
-        if (!req.params.contactNumber) {
-            response(res, 400, 'Phone number is required');
+        if (!req.params.id) {
+            response(res, 400, 'Institute id is required');
             return;
         }
 
-        const institute = await Institute.findOne({ "basicInfo.contactNumber": req.params.contactNumber });
-        console.log(institute);
+        const institute = await Institute.findById(req.params.id);
         res.status(200).json({ institute });
 
     } catch(error) {
@@ -118,14 +120,14 @@ exports.updateInstitute = async (req, res, next) => {
 
 try {
 
-    if (!req.params.contactNumber) {
-        response(res, 400, 'Institute contact number not provided');
+    if (!req.params.id) {
+        response(res, 400, 'Institute id not provided');
         return;
     }
 
-    const contactNumber = req.params.contactNumber;
+    const id = req.params.id;
 
-    const updatedInstitute = await Institute.updateOne({ "basicInfo.contactNumber" : contactNumber }, { $set: req.body }, { new: true });
+    const updatedInstitute = await Institute.updateOne({ _id : id }, { $set: req.body }, { new: true });
 
     res.status(201).json({updatedInstitute});
 
