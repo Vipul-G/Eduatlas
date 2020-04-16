@@ -8,6 +8,6 @@ instituteRouter.post('/addInstitute', checkAuth, checkPayment, extractFile, inst
 instituteRouter.get('/all', checkAuth, checkPayment, instituteController.getAllInstitutes);
 instituteRouter.delete('/:id', checkAuth, instituteController.deleteInstitute);
 instituteRouter.get('/oneInstitute/:id', checkAuth, instituteController.getOneInstitute);
-instituteRouter.patch('/updateInstitute/:id', checkAuth, instituteController.updateInstitute);
+instituteRouter.put('/updateInstitute/:id', checkAuth, instituteController.updateInstitute);
 
 module.exports = instituteRouter; 

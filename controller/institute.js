@@ -5,6 +5,19 @@ const Institute = require('../model/institute.model');
 const schema = require('./service/joi');
 const response = require('./service/response');
 const fs = require('fs');
+
+function deleteImage() {
+    fs.unlink(__dirname + "/../images/" + image.filename, (error) => {
+        if(error) {
+            console.log(error);
+            const err = new Error('Error while deleting the image');
+            err.statusCode = 500;
+            throw err;
+        }
+        console.log('File Deleted successfully');
+    }); 
+}
+
 exports.addInstitute = async (req, res, next) => {
     try {
         req.body.basicInfo = JSON.parse(req.body.basicInfo);
@@ -20,10 +33,9 @@ exports.addInstitute = async (req, res, next) => {
         const {error, value} = schema('addInstitute').validate(req.body);
         if(error) { 
             console.log(error);
-            res.status(400).json({
-             message: 'Insufficient/Wrong parameters provided'
-            });
-            return;
+            const err = new Error('Insufficiant/wrong parameter provided');
+            err.statusCode = 400;
+            throw err;
         }
         let institute;
 
@@ -50,21 +62,14 @@ exports.addInstitute = async (req, res, next) => {
 
         await institute.save();
 
-        fs.unlink(__dirname + "/../images/" + image.filename, (error) => {
-            if(error) {
-                console.log(error);
-                const err = new Error('Error while deleting the image');
-                err.statusCode = 500;
-                throw err;
-            }
-            console.log('File Deleted successfully');
-        });
+        deleteImage();
 
         response(res, 201, 'Institute added successfully');
 
     } catch(error) {
         console.log(error, req.body);
-        response(res, 500, 'Internal server error')
+        deleteImage();
+        response(res, error.statusCode || 500, error.message);
     }
 
 };
@@ -122,18 +127,19 @@ try {
 
     if (!req.params.id) {
         response(res, 400, 'Institute id not provided');
-        return;
+        throw new Error('Institute id not provided');
     }
 
     const id = req.params.id;
 
-    const updatedInstitute = await Institute.updateOne({ _id : id }, { $set: req.body }, { new: true });
+
+    const updatedInstitute = await Institute.findByIdAndUpdate(id, { $set: req.body }, { new: true });
 
     res.status(201).json({updatedInstitute});
 
 } catch(error) {
     console.log(error);
-    response(res, 500, 'Internal server error while updating the institutes');
+    response(res, 500, error.message);
 }
 
 };

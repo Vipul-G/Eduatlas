@@ -22,7 +22,8 @@ app.use(cookieParser());
 
 mongoose.connect( "mongodb://localhost/Eduatals" , {   
   useNewUrlParser: true,
-  useUnifiedTopology: true
+  useUnifiedTopology: true,
+  useFindAndModify: false
  })
 .then(()=>{
   console.log('==========================================================================')
@@ -38,6 +39,6 @@ mongoose.connect( "mongodb://localhost/Eduatals" , {
 app.use('/', indexRouter);
 app.use('/users', require('./routes/users'));
 app.use('/institute', require('./routes/institute'));
-app.use('/student', require('./routes/student'));
+app.use('/institute/student', require('./routes/student'));
 
 module.exports = app;

@@ -50,21 +50,21 @@ const schema = {
       }),
 
       address: joi.object({
-        addressLine: joi.string(),
-        locality: joi.string(),
-        state: joi.string(),
-        city: joi.string(),
-        pin: joi.number()
-      }),
+        addressLine: joi.string().allow(''),
+        locality: joi.string().allow(''),
+        state: joi.string().allow(''),
+        city: joi.string().allow(''),
+        pin: joi.number().allow(null)
+      }).optional(),
 
       location : joi.object({
         type: joi.string().trim(),
         coordinates: joi.array()
-      }),
+      }).optional(),
 
-      category : joi.array(),
+      category : joi.array().optional(),
 
-      metaTag : joi.array()
+      metaTag : joi.array().optional()
       
     }),
 
