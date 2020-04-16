@@ -67,14 +67,12 @@ exports.loginUser = async (req, res, next) => {
           message: 'Authentication failed'
         });
       }
-      const token = jwt.sign({phone: fetchedUser.phone, userId: fetchedUser._id},
-                      process.env.JWT_KEY, // specify jwt key in nodemon.json confige file in root directory
-                      { expiresIn: "3h"  } // login session will expire in 1 hour
-                            );
+      const token = jwt.sign({phone: fetchedUser.phone, userId: fetchedUser._id}, process.env.JWT_KEY, { expiresIn: "3h"  } );
       res.status(200).json({
         token,
         expiresIn: 3600,
-        phone: fetchedUser.phone
+        phone: fetchedUser.phone,
+        userName: fetchedUser.name
       });
     })
     .catch(err => {

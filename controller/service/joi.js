@@ -83,11 +83,23 @@ const schema = {
         contactNumber: joi.custom(checkPhone, 'Phone number validator').required()
       }),
       parentDetails: joi.object({
-        name: joi.required(),
-        contactNumber: joi.custom(checkPhone, 'Phone number validator').required()
+        name: joi.string().allow(''),
+        contactNumber: joi.custom(checkPhone, 'Phone number validator'),
+        email: joi.string().allow(''),
+        address: joi.string().allow('')
       }),
       courseDetails: joi.object({
-        course: joi.required()
+        course: joi.string().allow(''),
+        batch: joi.string().allow(''),
+        discount: joi.number().allow(null),
+        additionalDiscount: joi.number().allow(null),
+        nextPayble: joi.string().allow('')
+      }),
+      fees : joi.object({
+        installmentNumber: joi.number().allow(null),
+        nextInstallment: joi.number().allow(null),
+        amountCollected: joi.number().allow(null),
+        mode: joi.string().allow('')
       })
       
     })

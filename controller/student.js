@@ -46,6 +46,33 @@ try {
 
 };
 
+exports.getOneStudent = async (req, res, next) => {
+
+try {
+    const studentId = req.params.id;
+    if(!studentId) {
+        const error = new Error('Student id not provided');
+        error.statusCode = 400;
+        throw error; 
+    }
+
+    const student = await Student.findById(studentId);
+
+    res.status(200).json({student});
+
+} catch(error) {
+
+    console.log(error);
+
+    response(res, error.statusCode||500, error.message);
+
+}
+    
+    
+    
+
+};
+
 exports.updateStudent = async (req, res, next) => {
 try {
 
