@@ -50,6 +50,16 @@ exports.addInstitute = async (req, res, next) => {
 
         await institute.save();
 
+        fs.unlink(__dirname + "/../images/" + image.filename, (error) => {
+            if(error) {
+                console.log(error);
+                const err = new Error('Error while deleting the image');
+                err.statusCode = 500;
+                throw err;
+            }
+            console.log('File Deleted successfully');
+        });
+
         response(res, 201, 'Institute added successfully');
 
     } catch(error) {
