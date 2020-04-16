@@ -12,6 +12,10 @@ exports.addInstitute = async (req, res, next) => {
         req.body.category = JSON.parse(req.body.category);
         req.body.metaTag = JSON.parse(req.body.metaTag);
         console.log('MULTER',req.file);
+        const image = {
+            filename : req.file.filename,
+            encoding: req.file.encoding
+        }
         delete req.body.logo;
         const {error, value} = schema('addInstitute').validate(req.body);
         if(error) { 
@@ -29,14 +33,22 @@ exports.addInstitute = async (req, res, next) => {
 
         const tempObj = Object.assign({}, req.body);
         tempObj.userPhone = req.user.phone;
-
-
         
         institute = new Institute;
 
-        institute.basicInfo = Object.assign({}, req.body.basicInfo);
-        // institute.basicInfo.logo.data = ---------------------------------------------------pending
+        institute.basicInfo = Object.assign({}, req.body.basicInfo); 
+        institute.basicInfo.logo.data = fs.readFileSync(__dirname + "/../images/" + image.filename);
+        institute.basicInfo.logo.contentType = 'image/png'; 
 
+        institute.address = Object.assign({}, req.body.address);
+
+        institute.category = req.body.category;
+
+        institute.metaTag = req.body.metaTag;
+
+        institute.userPhone = req.user.phone;
+
+        await institute.save();
 
         response(res, 201, 'Institute added successfully');
 
