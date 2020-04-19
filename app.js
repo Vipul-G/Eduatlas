@@ -11,22 +11,30 @@ const app = express();
 
 const port = process.env.PORT || 3000;
 
-app.use(cors());
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept, authorization'
+  );
+  res.setHeader('Access-Control-Allow-Methods',
+    'GET, POST, PUT, PATCH, DELETE, OPTIONS'
+  );
+  next();
+});
 app.use(logger('dev'));
 app.use(express.json({limit: '100mb'}));
 app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 app.use('/images',express.static(path.join('Server/images')));
 app.use(cookieParser());
 
-
-
-mongoose.connect( "mongodb://localhost/Eduatals" , {   
+//"mongodb://localhost:27017/Eduatlas"
+mongoose.connect( "mongodb://localhost:27017/Eduatlas"
+ , {   
   useNewUrlParser: true,
   useUnifiedTopology: true,
   useFindAndModify: false
  })
 .then(()=>{
-  console.log('==========================================================================')
   app.listen(port, () => console.log('Listening on', port));
   console.log('Connected to database');
 })

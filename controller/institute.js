@@ -6,7 +6,7 @@ const schema = require('./service/joi');
 const response = require('./service/response');
 const fs = require('fs');
 
-function deleteImage() {
+function deleteImage(image) {
     fs.unlink(__dirname + "/../images/" + image.filename, (error) => {
         if(error) {
             console.log(error);
@@ -19,13 +19,14 @@ function deleteImage() {
 }
 
 exports.addInstitute = async (req, res, next) => {
+    let image;
     try {
         req.body.basicInfo = JSON.parse(req.body.basicInfo);
         req.body.address = JSON.parse(req.body.address);
         req.body.category = JSON.parse(req.body.category);
         req.body.metaTag = JSON.parse(req.body.metaTag);
         console.log('MULTER',req.file);
-        const image = {
+        image = {
             filename : req.file.filename,
             encoding: req.file.encoding
         }
@@ -62,13 +63,13 @@ exports.addInstitute = async (req, res, next) => {
 
         await institute.save();
 
-        deleteImage();
+        deleteImage(image);
 
         response(res, 201, 'Institute added successfully');
 
     } catch(error) {
         console.log(error, req.body);
-        deleteImage();
+        deleteImage(image);
         response(res, error.statusCode || 500, error.message);
     }
 
@@ -111,6 +112,7 @@ exports.getOneInstitute = async (req, res, next) => {
 exports.getAllInstitutes = async (req, res, next) => {
     try {
         const institutes = await Institute.find({ userPhone: req.user.phone });
+        console.log(institutes);
         res.status(200).json({
             'institutes': institutes
         })
