@@ -1,9 +1,11 @@
 const joi = require('@hapi/joi');
 
 function checkPhone(value, helpers) {
-
-    if (((typeof value) != 'number') || value.toString().length !== 10 || value == undefined) {
-      return helpers.error('Incorrect Phone number')
+    if (((typeof value) != 'number') || value.toString().length !== 10) {
+      if (value == null) {
+        return value;
+      }
+      return helpers.error('Phone number')
     }
   
     return value;
@@ -80,6 +82,7 @@ const schema = {
       basicDetails: joi.object({
         name: joi.required(),
         rollNumber: joi.required(),
+        email: joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
         contactNumber: joi.custom(checkPhone, 'Phone number validator').required()
       }),
       parentDetails: joi.object({
@@ -102,6 +105,26 @@ const schema = {
         mode: joi.string().allow('')
       })
       
+    }),
+
+    addCourse: joi.object({
+      name: joi.string().required(),
+      code: joi.string().required(),
+      fee: joi.string().allow(''),
+      gst: joi.string().allow(''),
+      totalfee: joi.string().allow('')
+    }),
+
+    addBatch: joi.object({
+      courseId: joi.string().required(),
+      code: joi.string().required(),
+      description: joi.string().allow('')
+    }),
+
+    addDiscount: joi.object({
+      code: joi.string().required(),
+      description: joi.string().allow(''),
+      amount: joi.string().required()
     })
   }
 

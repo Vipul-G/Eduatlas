@@ -57,11 +57,9 @@ exports.loginUser = async (req, res, next) => {
         });
       }
       fetchedUser = user;
-      console.log('fetchUser pass -', typeof user.password, 'req.body.pass -', typeof req.body.password);
       return bcrypt.compare(req.body.password, user.password);
     })
     .then(result => {
-      console.log('RESULT-', result);
       if (!result) {
         return res.status(401).json({
           message: 'Authentication failed'

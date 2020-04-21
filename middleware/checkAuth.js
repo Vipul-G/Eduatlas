@@ -4,8 +4,7 @@ module.exports = (req, res, next) => {
   // if not contain tocken then it might fail
   try {
     const token =  req.headers.authorization.split(" ")[1];
-    console.log(process.env.JWT_KEY);
-    const decodedToken = jwt.verify(token, process.env.JWT_KEY, {ignoreExpiration : true});
+    const decodedToken = jwt.verify(token, "specify jwt-key here", {ignoreExpiration : true});
     req.user = {};
     req.user._id = decodedToken._id;
     req.user.phone = decodedToken.phone;

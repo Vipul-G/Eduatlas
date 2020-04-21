@@ -1,13 +1,11 @@
-const joi = require('@hapi/joi');
-
 const Institute = require('../model/institute.model');
 
 const schema = require('./service/joi');
 const response = require('./service/response');
 const fs = require('fs');
 
-function deleteImage(image) {
-    fs.unlink(__dirname + "/../images/" + image.filename, (error) => {
+function deleteImage({filename}) {
+    fs.unlink(__dirname + "/../images/" + filename, (error) => {
         if(error) {
             console.log(error);
             const err = new Error('Error while deleting the image');

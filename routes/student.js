@@ -5,7 +5,7 @@ const studentController = require('../controller/student');
 
 studentRouter.post('/add', checkAuth, studentController.addStudent);
 
-studentRouter.get('/all', checkAuth, studentController.getAllStudents);
+studentRouter.get('/all/:instituteId', checkAuth, studentController.getAllStudents);
 studentRouter.get('/:id', checkAuth, studentController.getOneStudent);
 
 studentRouter.put('/:id', checkAuth, studentController.updateStudent);

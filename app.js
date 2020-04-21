@@ -28,7 +28,7 @@ app.use('/images',express.static(path.join('Server/images')));
 app.use(cookieParser());
 
 //"mongodb://localhost:27017/Eduatlas"
-mongoose.connect( "mongodb://localhost:27017/Eduatlas"
+mongoose.connect("mongodb://localhost:27017/Eduatlas"
  , {   
   useNewUrlParser: true,
   useUnifiedTopology: true,
@@ -42,7 +42,7 @@ mongoose.connect( "mongodb://localhost:27017/Eduatlas"
   console.error('Connection failed', '\n');
   console.log(reason);
 });
-
+console.log('=================================================')
 
 app.use('/', indexRouter);
 app.use('/users', require('./routes/users'));
