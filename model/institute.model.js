@@ -4,26 +4,27 @@ const Schema = mongoose.Schema;
 const courseSchema = new Schema({
   name: {type: String, required: 'Branch name is requires', lowercase: true},
   code: {type: Number, unique: true, set: parseNumber},
-  fee: {type: Number, set: parseNumber},
+  fees: {type: Number, set: parseNumber},
+  discription: {type: String, default: ''},
   gst: { 
       type: String,
       enum: ['inclusive', 'exclusive'],
       default: 'exclusive'
   },
-  totalfee: {type: Number, set: parseNumber}
+  totalFee: {type: Number, set: parseNumber}
 });
 
 const batchSchema = new Schema({
   courseId: {type: mongoose.Types.ObjectId, ref: "Institute.course"},
   code: {type: String, unique: true},
   description: {type: String}
-}, {_id: false});
+});
 
 const discountSchema = new Schema({
   code: {type: Number, set: parseNumber},
   description: {type: String},
   amount: {type: Number, set: parseNumber}
-}, {_id: false})
+})
 
 const instituteSchemsa = new Schema({
     basicInfo: new Schema({
@@ -60,9 +61,9 @@ const instituteSchemsa = new Schema({
 
     course : {type: [courseSchema], default: []},
 
-    batch: {type: batchSchema, default: undefined},
+    batch: {type: [batchSchema], default: []},
 
-    discount: { type: discountSchema, default: undefined }
+    discount: { type: [discountSchema], default: [] }
 
 
 });

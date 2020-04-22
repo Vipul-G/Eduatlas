@@ -110,9 +110,10 @@ const schema = {
     addCourse: joi.object({
       name: joi.string().required(),
       code: joi.string().required(),
-      fee: joi.string().allow(''),
+      fees: joi.string().allow(''),
+      discription: joi.string().allow(''),
       gst: joi.string().allow(''),
-      totalfee: joi.string().allow('')
+      totalFee: joi.string().allow('')
     }),
 
     addBatch: joi.object({

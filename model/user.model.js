@@ -11,7 +11,7 @@ const userSchema = mongoose.Schema({
         trim: true,
         lowercase:true
     },
-    phone: { type: Number, required: [true, 'Phone is required'], unique: true, minlength: 10, maxlength: 10 },
+    phone: { type: Number, required: [true, 'Phone is required'], unique: true, sparse: true, minlength: 10, maxlength: 10 },
     password: { type: String, required: [true, 'Password is required'] },
     role : { type: String, uppercase: true, required: [true, 'Role is required'] }
 });
