@@ -12,23 +12,26 @@ instituteRouter.get('/oneInstitute/:id', checkAuth, instituteController.getOneIn
 instituteRouter.put('/updateInstitute/:id', checkAuth, instituteController.updateInstitute);
 
 //@course Routes
-instituteRouter.route('/course').all(checkAuth);
+instituteRouter.post('/course/addCourse/:branchId', checkAuth, couseConroller.addCourse);
+instituteRouter.post('/course/addBatch/:branchId', checkAuth, couseConroller.addBatch);
+instituteRouter.post('/course/addDiscount/:branchId', checkAuth, couseConroller.addDiscount);
+instituteRouter.post('/course/addReciept/:branchId', checkAuth, couseConroller.addReciept);
 
-instituteRouter.post('/course/addCourse/:branchId', couseConroller.addCourse);
-instituteRouter.post('/course/addBatch/:branchId', couseConroller.addBatch);
-instituteRouter.post('/course/addDiscount/:branchId', couseConroller.addDiscount);
+instituteRouter.get('/course/all/:branchId', checkAuth, couseConroller.getCourses);
+instituteRouter.get('/course/one', checkAuth, couseConroller.getCourse);
+instituteRouter.get('/course/batch', checkAuth, couseConroller.getBatche);
+instituteRouter.get('/course/discount', checkAuth, couseConroller.getDiscount);
+instituteRouter.get('/course/batches/:branchId', checkAuth, couseConroller.getBatches);
+instituteRouter.get('/course/discounts/:branchId', checkAuth, couseConroller.getDiscounts);
 
-instituteRouter.get('/course/all/:branchId', couseConroller.getCourses);
-instituteRouter.get('/course/batches/:branchId', couseConroller.getBatches);
-instituteRouter.get('/course/discounts/:branchId', couseConroller.getDiscounts);
+instituteRouter.patch('/course', checkAuth, couseConroller.updateCourse);
+instituteRouter.patch('/course/batch', checkAuth, couseConroller.updateBatch);
+instituteRouter.patch('/course/discount', checkAuth, couseConroller.updateDiscount);
 
-instituteRouter.patch('/course', couseConroller.updateCourse);
-instituteRouter.patch('/course/batch', couseConroller.updateBatch);
-instituteRouter.patch('/course/discount', couseConroller.updateDiscount);
+instituteRouter.delete('/course/course', checkAuth, couseConroller.deleteCourse);
+instituteRouter.delete('/course/batch', checkAuth, couseConroller.deleteBatch);
+instituteRouter.delete('/course/discount', checkAuth, couseConroller.deleteDiscount);
 
-instituteRouter.delete('/course', couseConroller.deleteCourse);
-instituteRouter.delete('/course/batch', couseConroller.deleteBatch);
-instituteRouter.delete('/course/discount', couseConroller.deleteDiscount);
 
 
 module.exports = instituteRouter; 

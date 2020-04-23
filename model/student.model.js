@@ -10,14 +10,14 @@ const studentSchema = new Schema({
         name: { type: String, required: 'Name is required' },
         rollNumber: { type: String, required: 'Roll number is required' },
         email: { type: String, required: false},
-        contactNumber: { type: Number, required: 'Student contact is required' }
+        studentContact: { type: Number, required: 'Student contact is required' }
 
     }, {_id: false}),
 
     parentDetails : new Schema({
 
         name: { type: String, required: false, lowercase: true },
-        contactNumber: { type: Number, required: false },
+        parentContact: { type: Number, required: false },
         email: { type: String, required: false },
         address: { type: String, required: false },
 

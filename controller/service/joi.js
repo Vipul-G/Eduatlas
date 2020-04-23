@@ -48,7 +48,7 @@ const schema = {
     addInstitute: joi.object({
       basicInfo : joi.object({
         name : joi.string().required(),
-        contactNumber : joi.custom(checkPhone, 'Phone number validator').required(),
+        instituteContact : joi.custom(checkPhone, 'Phone number validator').required(),
       }),
 
       address: joi.object({
@@ -83,11 +83,11 @@ const schema = {
         name: joi.required(),
         rollNumber: joi.required(),
         email: joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
-        contactNumber: joi.custom(checkPhone, 'Phone number validator').required()
+        studentContact: joi.custom(checkPhone, 'Phone number validator').required()
       }),
       parentDetails: joi.object({
         name: joi.string().allow(''),
-        contactNumber: joi.custom(checkPhone, 'Phone number validator'),
+        parentContact: joi.custom(checkPhone, 'Phone number validator'),
         email: joi.string().allow(''),
         address: joi.string().allow('')
       }),
@@ -126,9 +126,37 @@ const schema = {
       code: joi.string().required(),
       description: joi.string().allow(''),
       amount: joi.string().required()
+    }),
+
+    addReciept: joi.object({
+      businessName: joi.string().allow(''),
+      address: joi.object({
+        addressLine: joi.string().allow(''),
+        locality: joi.string().allow(''),
+        state: joi.string().allow(''),
+        city: joi.string().allow(''),
+        pin: joi.string().allow('')
+      }).optional(),
+      gstNumber: joi.string().allow(''),
+      termsAndCondition: joi.string().allow(''),
+      fee: joi.string().allow('')
     })
   }
 
   module.exports = function (SchemaName) {
     return schema[SchemaName];
   }
+  // businessName: { type: String },
+
+  // address: { 
+  //   type: new Schema({
+  //   addressLine: { type: String },
+  //   locality: { type: String },
+  //   state: { type: String},
+  //   city: { type: String },
+  //   pin: { type: Number, set: parseNumber }
+  // }, {_id: false}), required: false, default: null },
+
+  // gstNumber: { type: Number, set: parseNumber },
+
+  // termsAndCondition: { type: String, required: false }

@@ -26,11 +26,32 @@ const discountSchema = new Schema({
   amount: {type: Number, set: parseNumber}
 })
 
+const recieptConfigSchema = new Schema({
+  businessName: { type: String },
+
+  address: { 
+    type: new Schema({
+    addressLine: { type: String },
+    locality: { type: String },
+    state: { type: String},
+    city: { type: String },
+    pin: { type: Number, set: parseNumber }
+  }, {_id: false}), required: false, default: null },
+
+  gstNumber: { type: Number, set: parseNumber },
+
+  termsAndCondition: { type: String, required: false },
+
+  fee: { type: Number, set: parseNumber, required: false }
+
+
+}, {_id: false});
+
 const instituteSchemsa = new Schema({
     basicInfo: new Schema({
         logo:  { data: Buffer, contentType: String},
         name: { type: String, required: [true, 'Institute name is required'] },
-        contactNumber: { type: Number, required: [true, 'Phone is required'] },
+        instituteContact: { type: Number, required: [true, 'Phone is required'] },
     }, {_id: false}),
 
     address: new Schema({
@@ -63,7 +84,9 @@ const instituteSchemsa = new Schema({
 
     batch: {type: [batchSchema], default: []},
 
-    discount: { type: [discountSchema], default: [] }
+    discount: { type: [discountSchema], default: [] },
+
+    reciept: { type: recieptConfigSchema, default: null }
 
 
 });
