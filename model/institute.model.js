@@ -16,7 +16,7 @@ const courseSchema = new Schema({
 
 const batchSchema = new Schema({
   course: {type: String, required: true},
-  code: {type: String, unique: true, required: true},
+  code: {type: String, required: true},
   description: {type: String}
 });
 

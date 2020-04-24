@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const studentSchema = new Schema({
 
-    instituteId : { type: Schema.Types.ObjectId, require: 'Institude Id not provided', ref: 'Institute' },
+    instituteId : { type: String, require: 'Institude Id not provided', ref: 'Institute' },
 
     basicDetails : new Schema({
 

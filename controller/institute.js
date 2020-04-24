@@ -23,7 +23,6 @@ exports.addInstitute = async (req, res, next) => {
         req.body.address = JSON.parse(req.body.address);
         req.body.category = JSON.parse(req.body.category);
         req.body.metaTag = JSON.parse(req.body.metaTag);
-        console.log('MULTER',req.file);
         image = {
             filename : req.file.filename,
             encoding: req.file.encoding
@@ -110,7 +109,6 @@ exports.getOneInstitute = async (req, res, next) => {
 exports.getAllInstitutes = async (req, res, next) => {
     try {
         const institutes = await Institute.find({ userPhone: req.user.phone });
-        console.log(institutes);
         res.status(200).json({
             'institutes': institutes
         })
