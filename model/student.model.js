@@ -9,15 +9,15 @@ const studentSchema = new Schema({
 
         name: { type: String, required: 'Name is required' },
         rollNumber: { type: String, required: 'Roll number is required' },
-        email: { type: String, required: false},
-        studentContact: { type: Number, required: 'Student contact is required' }
+        email: { type: String, required: 'email is required'},
+        studentContact: { type: Number, set: parseNumber, required: false }
 
     }, {_id: false}),
 
     parentDetails : new Schema({
 
         name: { type: String, required: false, lowercase: true },
-        parentContact: { type: Number, required: false },
+        parentContact: { type: Number, set: parseNumber, required: false },
         email: { type: String, required: false },
         address: { type: String, required: false },
 
@@ -27,21 +27,28 @@ const studentSchema = new Schema({
 
         course: { type: String, required: false },
         batch: { type: String, required: false },
-        discount: { type: Number, required: false },
-        additionalDiscount: { type: Number, required: false },
-        nextPayble: { type: Date, required: false },
+        discount: { type: Number, set: parseNumber, required: false },
+        additionalDiscount: { type: Number, set: parseNumber, required: false },
+        nextPayble: { type: String, required: false },
 
     }, {_id: false}),
 
-    fees: new Schema({
-        installmentNumber: { type: Number, required: false },
-        nextInstallment: { type: Number, required: false },
-        amountCollected: { type: Number, required: false },
+    fee: new Schema({
+        installmentNumber: { type: Number, set: parseNumber ,required: false },
+        nextInstallment: { type: Number, set: parseNumber, required: false },
+        amountCollected: { type: Number, set: parseNumber, required: false },
         mode: { type: String, required: false }
     }, {_id: false}),
 
-    batch: [{type: Schema.Types.ObjectId}]
+    active: {type: Boolean, default: false}
 
 });
+
+function parseNumber(value) {
+    if(value == '') {
+      return null
+    }
+    return parseInt(value);
+  }
 
 module.exports = mongoose.model('Student', studentSchema);

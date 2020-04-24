@@ -1,8 +1,8 @@
 const joi = require('@hapi/joi');
 
 function checkPhone(value, helpers) {
-    if (((typeof value) != 'number') || value.toString().length !== 10) {
-      if (value == null) {
+    if (value.length !== 10) {
+      if (value == '') {
         return value;
       }
       return helpers.error('Phone number')
@@ -78,33 +78,32 @@ const schema = {
     }),
 
     addStudent: joi.object({
-      instituteId : joi.required(),
+      instituteId : joi.string().required(),
       basicDetails: joi.object({
-        name: joi.required(),
-        rollNumber: joi.required(),
+        name: joi.string(),
+        rollNumber: joi.string(),
         email: joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
-        studentContact: joi.custom(checkPhone, 'Phone number validator').required()
+        studentContact: joi.custom(checkPhone, 'Phone number validator').allow('')
       }),
       parentDetails: joi.object({
         name: joi.string().allow(''),
-        parentContact: joi.custom(checkPhone, 'Phone number validator'),
+        parentContact: joi.custom(checkPhone, 'Phone number validator').allow(''),
         email: joi.string().allow(''),
         address: joi.string().allow('')
       }),
       courseDetails: joi.object({
         course: joi.string().allow(''),
         batch: joi.string().allow(''),
-        discount: joi.number().allow(null),
-        additionalDiscount: joi.number().allow(null),
+        discount: joi.string().allow(''),
+        additionalDiscount: joi.string().allow(''),
         nextPayble: joi.string().allow('')
       }),
-      fees : joi.object({
-        installmentNumber: joi.number().allow(null),
-        nextInstallment: joi.number().allow(null),
-        amountCollected: joi.number().allow(null),
+      fee : joi.object({
+        installmentNumber: joi.string().allow(''),
+        nextInstallment: joi.string().allow(''),
+        amountCollected: joi.string().allow(''),
         mode: joi.string().allow('')
       })
-      
     }),
 
     addCourse: joi.object({
@@ -117,7 +116,7 @@ const schema = {
     }),
 
     addBatch: joi.object({
-      courseId: joi.string().required(),
+      course: joi.string().required(),
       code: joi.string().required(),
       description: joi.string().allow('')
     }),
@@ -130,13 +129,7 @@ const schema = {
 
     addReciept: joi.object({
       businessName: joi.string().allow(''),
-      address: joi.object({
-        addressLine: joi.string().allow(''),
-        locality: joi.string().allow(''),
-        state: joi.string().allow(''),
-        city: joi.string().allow(''),
-        pin: joi.string().allow('')
-      }).optional(),
+      address: joi.string().allow(''),
       gstNumber: joi.string().allow(''),
       termsAndCondition: joi.string().allow(''),
       fee: joi.string().allow('')
@@ -146,17 +139,3 @@ const schema = {
   module.exports = function (SchemaName) {
     return schema[SchemaName];
   }
-  // businessName: { type: String },
-
-  // address: { 
-  //   type: new Schema({
-  //   addressLine: { type: String },
-  //   locality: { type: String },
-  //   state: { type: String},
-  //   city: { type: String },
-  //   pin: { type: Number, set: parseNumber }
-  // }, {_id: false}), required: false, default: null },
-
-  // gstNumber: { type: Number, set: parseNumber },
-
-  // termsAndCondition: { type: String, required: false }

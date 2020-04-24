@@ -15,8 +15,8 @@ const courseSchema = new Schema({
 });
 
 const batchSchema = new Schema({
-  courseId: {type: mongoose.Types.ObjectId, ref: "Institute.course"},
-  code: {type: String, unique: true},
+  course: {type: String, required: true},
+  code: {type: String, unique: true, required: true},
   description: {type: String}
 });
 
@@ -29,20 +29,13 @@ const discountSchema = new Schema({
 const recieptConfigSchema = new Schema({
   businessName: { type: String },
 
-  address: { 
-    type: new Schema({
-    addressLine: { type: String },
-    locality: { type: String },
-    state: { type: String},
-    city: { type: String },
-    pin: { type: Number, set: parseNumber }
-  }, {_id: false}), required: false, default: null },
+  address: {type: String, required: false},
 
   gstNumber: { type: Number, set: parseNumber },
 
   termsAndCondition: { type: String, required: false },
 
-  fee: { type: Number, set: parseNumber, required: false }
+  fee: { type: String, enum: ['Collection Basis', 'Course Fee Basis'] }
 
 
 }, {_id: false});

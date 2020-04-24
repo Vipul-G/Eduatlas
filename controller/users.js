@@ -66,6 +66,9 @@ exports.loginUser = async (req, res, next) => {
         });
       }
       const token = jwt.sign({phone: fetchedUser.phone, userId: fetchedUser._id}, "specify jwt-key here");
+
+
+
       res.status(200).json({
         token,
         expiresIn: 3600,

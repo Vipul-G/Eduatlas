@@ -68,7 +68,7 @@ exports.updateCourse = async (req, res, next) => {
 
         await Institute.updateOne(
             {_id: courseInfo.instituteId, "course._id": courseInfo.courseId},
-            {$set: req.body});
+            {$set: {"course.$": req.body}});
 
         res.status(200).send('Updatted successfully');
 
@@ -160,7 +160,7 @@ exports.updateBatch = async (req, res, next) => {
 
         await Institute.updateOne(
             {_id: batchInfo.instituteId, "batch._id": batchInfo.batchId},
-            {$set: req.body});
+            {$set: {"batch.$": req.body}});
 
         res.status(200).send('Updatted successfully');
 
@@ -202,13 +202,13 @@ exports.getBatche = async (req, res, next) => {
 
         const batchInfo = req.query; // suppose to contain instituteId and batchId
 
-        if(!batchInfo.instituteId || !batchInfo.courseId) {
+        if(!batchInfo.instituteId || !batchInfo.batchId) {
             const error = new Error('Batch Information not provided');
             error.statusCode = 400;
             throw error
         }
 
-        let batch = await Institute.find({_id: batchInfo.instituteId}, {batch: 1, _id: 0});
+        let batch = await Institute.findOne({_id: batchInfo.instituteId}, {batch: 1, _id: 0});
         batch = batch.batch;
         batch = batch.filter((b) => b._id == batchInfo.batchId);
 
@@ -280,7 +280,7 @@ exports.updateDiscount = async (req, res, next) => {
 
         await Institute.updateOne(
             {_id: discountInfo.instituteId, "discount._id": discountInfo.batchId},
-            {$set: req.body});
+            {$set: {"discount.$": req.body}});
 
         res.status(200).send('Updatted successfully');
 
@@ -327,11 +327,9 @@ exports.getDiscount = async (req, res, next) => {
             error.statusCode = 400;
             throw error
         }
-
-        let discount = await Institute.find({_id: discountInfo.discountId}, {discount: 1, _id: 0});
-
+        console.log(discountInfo);
+        let discount = await Institute.findOne({_id: discountInfo.instituteId}, {discount: 1, _id: 0});
         discount = discount.discount;
-
         discount = discount.filter(d => d._id == discountInfo.discountId);
 
         res.status(200).json(discount);
@@ -368,7 +366,7 @@ exports.addReciept = async (req, res, next) => {
 try {
 
     const branchId = req.params.branchId;
-
+    delete req.body.id;
     const {error, value} = schema('addReciept').validate(req.body);
 
     if(!branchId || error) {
@@ -376,12 +374,13 @@ try {
         if(error) {
             console.log(error);
             err = new Error('Insufficiant/Wrong parameters provided');
+            throw err;
         }
         err = new Error('Institute Id not provided');
         err.statusCode = 400;
         throw err;
     }
-
+    console.log('========',req.body)
     const updatedInst = await Institute.updateOne({_id: branchId},
         {$set: {reciept: req.body}});
 
@@ -397,16 +396,16 @@ try {
 exports.updateReciept = async (req, res, next) => {
 try {
 
-    const recieptInfo = req.query; // suppose to contain instituteId and recieptId
+    const instituteId = req.params.institute; // suppose to contain instituteId and recieptId
 
-    if(!recieptInfo.instituteId || !recieptInfo.recieptId) {
+    if(!instituteId) {
         const error = new Error('reciept Information not provided');
         error.statusCode = 400;
         throw error
     }
 
     await Institute.updateOne(
-        {_id: recieptInfo.instituteId},
+        {_id: instituteId},
         {$set: {reciept: req.body}});
 
     res.status(200).json({'message':'Updatted successfully'});
@@ -444,16 +443,16 @@ exports.getReciept = async (req, res, next) => {
 exports.deleteReciept = async (req, res, next) => {
     try {
 
-        const recieptInfo = req.query; // suppose to contain instituteId and recieptId
+        const instituteId = req.params.instituteId; // suppose to contain instituteId and recieptId
 
-        if(!recieptInfo.instituteId || !recieptInfo.recieptId) {
+        if(!instituteId) {
             const error = new Error('Reciept Information not provided');
             error.statusCode = 400;
             throw error
         }
 
         Institute.findOneAndUpdate(
-            { _id: recieptInfo.instituteId },
+            { _id: instituteId },
             { $set: { reciept: null }},
             { new: true },
             function(err) {
@@ -467,4 +466,3 @@ exports.deleteReciept = async (req, res, next) => {
         response(res, error.statusCode || 500, error.message)
     }
 };
-

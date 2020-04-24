@@ -6,7 +6,6 @@ exports.addStudent = async (req, res, next) => {
 try {
 
     const {error, value} = schema('addStudent').validate(req.body);
-
     if(error) {
         console.log(error);
         return res.status(400).json({
@@ -14,6 +13,9 @@ try {
         });
     }
 
+    if(req.body.courseDetails.batch.length) {
+        req.body.active = true;
+    }
     await Student.create(req.body);
 
     response(res, 201, 'Student added successfully');
