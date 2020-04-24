@@ -10,26 +10,26 @@ const studentSchema = new Schema({
         name: { type: String, required: 'Name is required' },
         rollNumber: { type: String, required: 'Roll number is required' },
         email: { type: String, required: 'email is required'},
-        studentContact: { type: Number, set: parseNumber, required: false }
+        studentContact: { type: Number, set: parseNumber, required: [true, 'studemt contact required'] }
 
     }, {_id: false}),
 
     parentDetails : new Schema({
 
-        name: { type: String, required: false, lowercase: true },
+        name: { type: String, lowercase: true, default: '' },
         parentContact: { type: Number, set: parseNumber, required: false },
-        email: { type: String, required: false },
-        address: { type: String, required: false },
+        email: { type: String, default: '' },
+        address: { type: String, default: '' },
 
     }, {_id: false}),
 
     courseDetails : new Schema({
 
-        course: { type: String, required: false },
-        batch: { type: String, required: false },
+        course: { type: String, default: '' },
+        batch: { type: String, default: '' },
         discount: { type: Number, set: parseNumber, required: false },
         additionalDiscount: { type: Number, set: parseNumber, required: false },
-        nextPayble: { type: String, required: false },
+        nextPayble: { type: String, default: '' },
 
     }, {_id: false}),
 

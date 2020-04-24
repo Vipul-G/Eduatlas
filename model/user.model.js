@@ -11,10 +11,17 @@ const userSchema = mongoose.Schema({
         trim: true,
         lowercase:true
     },
-    phone: { type: Number, required: [true, 'Phone is required'], minlength: 10, maxlength: 10 },
+    phone: { type: Number, set: parseNumber, required: [true, 'Phone is required'], minlength: 10, maxlength: 10 },
     password: { type: String, required: [true, 'Password is required'] },
     role : { type: String, uppercase: true, required: [true, 'Role is required'] },
     login: { type: Boolean, default: false }
 });
+
+function parseNumber(value) {
+    if(value == '') {
+      return null
+    }
+    return parseInt(value);
+  }
 
 module.exports = mongoose.model('User', userSchema);

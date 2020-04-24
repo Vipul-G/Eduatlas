@@ -51,14 +51,17 @@ try {
 exports.getOneStudent = async (req, res, next) => {
 
 try {
-    const studentId = req.params.id;
-    if(!studentId) {
-        const error = new Error('Student id not provided');
+    const studentInfo = req.query;
+    if(!studentInfo.instituteId || !studentInfo.studentEmail) {
+        const error = new Error('Student info not provided');
         error.statusCode = 400;
         throw error; 
     }
 
-    const student = await Student.findById(studentId);
+    const student = await Student.findOne({
+        instituteId: studentInfo.instituteId,
+        "basicDetails.email": studentInfo.studentEmail
+    });
 
     res.status(200).json({student});
 
@@ -78,15 +81,19 @@ try {
 exports.updateStudent = async (req, res, next) => {
 try {
 
-    const id = req.body.params.id;
+    const studentInfo = req.query;
 
-    if(!id) {
-        const error = new Error('Student id not provided');
-        error.prototype.statusCode = 400;
+
+    if(!studentInfo.instituteId || !studentInfo.studentEmail) {
+        const error = new Error('Student info not provided');
+        error.statusCode = 400;
         throw error; 
     }
     
-    const updatedStudent = await Student.findByIdAndUpdate(id, {$set: req.body});
+    const updatedStudent = await Student.findOneAndUpdate({
+        instituteId: studentInfo.instituteId,
+        "basicDetails.email": studentInfo.studentEmail
+    }, {$set: req.body});
 
     res.status(204).json(updatedStudent);
 
@@ -100,19 +107,23 @@ try {
 exports.deleteStudent = async (req, res, next) => {
 try {
 
-    const id = req.body.params.id;
-
-    if(!id) {
-        const error = new Error('Student id not provided');
-        error.prototype.statusCode = 400;
+    const studentInfo = req.query;
+    console.log('StudentInfo', studentInfo);
+    if(!studentInfo.instituteId || !studentInfo.studentEmail) {
+        const error = new Error('Student info not provided');
+        error.statusCode = 400;
         throw error; 
     }
-
-    await Student.findByIdAndDelete(id);
+    console.log('StudentInfo', studentInfo);
+    await Student.findOneAndDelete({
+        instituteId: studentInfo.instituteId,
+        "basicDetails.email": studentInfo.studentEmail 
+    });
 
     res.status(202).json({ 'message': 'Student deleted successfully' });
 
 } catch(error) {
+    console.log('========================')
     console.log(error);
     response(res, error.prototype.statusCode || 500, error.message);
 }

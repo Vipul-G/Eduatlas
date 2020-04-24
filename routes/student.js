@@ -6,11 +6,11 @@ const studentController = require('../controller/student');
 studentRouter.post('/add', checkAuth, studentController.addStudent);
 
 studentRouter.get('/all/:instituteId', checkAuth, studentController.getAllStudents);
-studentRouter.get('/:id', checkAuth, studentController.getOneStudent);
+studentRouter.get('', checkAuth, studentController.getOneStudent);
 
-studentRouter.put('/:id', checkAuth, studentController.updateStudent);
+studentRouter.put('', checkAuth, studentController.updateStudent);
 
-studentRouter.delete('/:id', checkAuth, studentController.deleteStudent);
+studentRouter.delete('', checkAuth, studentController.deleteStudent);
 
 
 

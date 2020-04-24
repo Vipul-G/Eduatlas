@@ -12,12 +12,20 @@ function checkPhone(value, helpers) {
   
 }
 
+function checkPhoneSignup(value, helpers) {
+  if (value.length !== 10) {
+    return helpers.error('Phone number')
+  }
+
+  return value;
+
+}
+
 const schema = {
 
     // signup schema
     signup: joi.object({
       name: joi.string()
-        .alphanum()
         .min(3)
         .max(30)
         .required(),
@@ -26,7 +34,7 @@ const schema = {
         .email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } })
         .required(),
     
-      phone: joi.number().custom(checkPhone, 'Phone number validator').required(),
+      phone: joi.custom(checkPhoneSignup, 'Phone number validator'),
     
       password: joi.string()
         .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')),
@@ -37,7 +45,7 @@ const schema = {
     
     // login schema
     login: joi.object({
-      phone: joi.custom(checkPhone, 'Phone number validator').required(),
+      phone: joi.custom(checkPhoneSignup, 'Phone number validator').required(),
   
       password: joi.string()
         .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$'))
