@@ -83,19 +83,29 @@ try {
 
     const studentInfo = req.query;
 
-
-    if(!studentInfo.instituteId || !studentInfo.studentEmail) {
-        const error = new Error('Student info not provided');
-        error.statusCode = 400;
-        throw error; 
+    const {error, value} = schema('addStudent').validate(req.body);
+    if(!studentInfo.instituteId || !studentInfo.studentEmail || error) {
+        let err;
+        if(error) {
+            console.log(error);
+            err = new Error('Insufficient/Wrong parameters provided');
+        } else {
+            err = new Error('Student info not provided');
+        }
+        err.statusCode = 400;
+        throw err; 
     }
-    
+    if(req.body.courseDetails.batch.length) {
+        req.body.active = true;
+    } else {
+        req.body.active = false;
+    }
     const updatedStudent = await Student.findOneAndUpdate({
         instituteId: studentInfo.instituteId,
         "basicDetails.email": studentInfo.studentEmail
-    }, {$set: req.body});
+    }, {$set: req.body}, { new: true});
 
-    res.status(204).json(updatedStudent);
+    res.status(200).json(updatedStudent);
 
 } catch(error) {
     console.log(error);
