@@ -90,13 +90,13 @@ const schema = {
       basicDetails: joi.object({
         name: joi.string(),
         rollNumber: joi.string(),
-        email: joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
+        studentEmail: joi.string().email({ minDomainSegments: 2, tlds: { allow: ['com', 'net'] } }),
         studentContact: joi.custom(checkPhone, 'Phone number validator').allow('')
       }),
       parentDetails: joi.object({
         name: joi.string().allow(''),
         parentContact: joi.custom(checkPhone, 'Phone number validator').allow(''),
-        email: joi.string().allow(''),
+        parentEmail: joi.string().allow(''),
         address: joi.string().allow('')
       }),
       courseDetails: joi.object({
@@ -116,7 +116,7 @@ const schema = {
 
     addCourse: joi.object({
       name: joi.string().required(),
-      code: joi.string().required(),
+      courseCode: joi.string().required(),
       fees: joi.string().allow(''),
       discription: joi.string().allow(''),
       gst: joi.string().allow(''),
@@ -125,12 +125,12 @@ const schema = {
 
     addBatch: joi.object({
       course: joi.string().required(),
-      code: joi.string().required(),
+      batchCode: joi.string().required(),
       description: joi.string().allow('')
     }),
 
     addDiscount: joi.object({
-      code: joi.string().required(),
+      discountCode: joi.string().required(),
       description: joi.string().allow(''),
       amount: joi.string().required()
     }),
@@ -141,7 +141,18 @@ const schema = {
       gstNumber: joi.string().allow(''),
       termsAndCondition: joi.string().allow(''),
       fee: joi.string().allow('')
-    })
+    }),
+
+    //@addSchedule schema
+    addSchedule: joi.object({
+      instituteId: joi.string().required(),
+      batchCode: joi.string().required(),
+      topic: joi.string().required(),
+      teacher: joi.string().required(),
+      scheduleStart: joi.string().allow(''),
+      scheduleEnd: joi.string().allow(''),
+      recurrence: joi.boolean()
+    }) 
   }
 
   module.exports = function (SchemaName) {

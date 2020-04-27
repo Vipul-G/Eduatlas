@@ -9,7 +9,7 @@ const studentSchema = new Schema({
 
         name: { type: String, required: 'Name is required' },
         rollNumber: { type: String, required: 'Roll number is required' },
-        email: { type: String, required: 'email is required'},
+        studentEmail: { type: String, required: 'email is required', unique: true},
         studentContact: { type: Number, get: parseString,set: parseNumber,  required: [true, 'student contact required'] }
 
     }, {_id: false, toJSON: {getters: true}, toObject: {getters: true}}),
@@ -18,7 +18,7 @@ const studentSchema = new Schema({
 
         name: { type: String, lowercase: true, default: '' },
         parentContact: { type: Number,  get: parseString, set: parseNumber, required: false },
-        email: { type: String, default: '' },
+        parentEmail: { type: String, default: '' },
         address: { type: String, default: '' },
 
     }, {_id: false, toJSON: {getters: true}, toObject: {getters: true}}),

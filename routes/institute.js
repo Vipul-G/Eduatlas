@@ -1,6 +1,7 @@
 const instituteRouter = require('express').Router();
 const instituteController = require('../controller/institute');
 const couseConroller = require('../controller/course');
+const scheduleController = require('../controller/schedule');
 const checkAuth = require('../middleware/checkAuth');
 const checkPayment = require('../middleware/checkPayment');
 const extractFile = require('../middleware/file');
@@ -11,7 +12,7 @@ instituteRouter.delete('/:id', checkAuth, instituteController.deleteInstitute);
 instituteRouter.get('/oneInstitute/:id', checkAuth, instituteController.getOneInstitute);
 instituteRouter.put('/updateInstitute/:id', checkAuth, instituteController.updateInstitute);
 
-//@course Routes
+//@course_Routes
 instituteRouter.post('/course/addCourse/:branchId', checkAuth, couseConroller.addCourse);
 instituteRouter.post('/course/addBatch/:branchId', checkAuth, couseConroller.addBatch);
 instituteRouter.post('/course/addDiscount/:branchId', checkAuth, couseConroller.addDiscount);
@@ -38,5 +39,10 @@ instituteRouter.delete('/course/reciept/:instituteId', checkAuth, couseConroller
 
 //@make_anounce
 instituteRouter.post('/anouncement', checkAuth, instituteController.makeAnouncement);
+
+//@schedule_Routes
+instituteRouter.post('/schedule', checkAuth, scheduleController.addSchedule);
+instituteRouter.put('/schedule', checkAuth, scheduleController.updateSchedule);
+instituteRouter.get('/schedule', checkAuth, scheduleController.getSchedule);
 
 module.exports = instituteRouter; 

@@ -2,6 +2,7 @@ const Institute = require('../model/institute.model');
 const Student = require('../model/student.model');
 const schema = require('./service/joi');
 const response = require('./service/response');
+const buffer = require('buffer').Buffer
 const fs = require('fs');
 
 function deleteImage({filename}) {
@@ -14,6 +15,17 @@ function deleteImage({filename}) {
         }
         console.log('File Deleted successfully');
     }); 
+}
+
+function base64Converter(buff) {
+    // let typed_array = new Uint8Array(buff);
+    // const string_char = typed_array.reduce((data, byte) => {
+    //     return data + String.fromCharCode(byte);
+    // }, '');
+    
+    const buf = buffer.from(buff);
+
+    return buf.toString('base64');
 }
 
 exports.addInstitute = async (req, res, next) => {
@@ -107,7 +119,7 @@ exports.getOneInstitute = async (req, res, next) => {
 exports.getAllInstitutes = async (req, res, next) => {
     try {
         const institutes = await Institute.find({ userPhone: req.user.phone });
-       
+        const logo = institutes[0].basicInfo.logo.data;
         res.status(200).json({
             'institutes': institutes
         })
