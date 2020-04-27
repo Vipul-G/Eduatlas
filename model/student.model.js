@@ -3,7 +3,7 @@ const Schema = mongoose.Schema;
 
 const studentSchema = new Schema({
 
-    instituteId : { type: String, require: 'Institude Id not provided', ref: 'Institute' },
+    instituteId : { type: Schema.Types.ObjectId, require: 'Institude Id not provided', ref: 'Institute' },
 
     basicDetails : new Schema({
 
@@ -17,7 +17,7 @@ const studentSchema = new Schema({
     parentDetails : new Schema({
 
         name: { type: String, lowercase: true, default: '' },
-        parentContact: { type: Number, get: parseString,set: parseNumber, required: false },
+        parentContact: { type: Number,  get: parseString, set: parseNumber, required: false },
         email: { type: String, default: '' },
         address: { type: String, default: '' },
 
@@ -27,31 +27,33 @@ const studentSchema = new Schema({
 
         course: { type: String, default: '' },
         batch: { type: String, default: '' },
-        discount: { type: Number, get: parseString,set: parseNumber,  required: false },
-        additionalDiscount: { type: Number, get: parseString,set: parseNumber, required: false },
+        discount: { type: Number,  get: parseString, set: parseNumber, required: false },
+        additionalDiscount: { type: Number,  get: parseString, set: parseNumber, required: false },
         nextPayble: { type: String, default: '' },
 
     }, {_id: false, toJSON: {getters: true}, toObject: {getters: true}}),
 
     fee: new Schema({
-        installmentNumber: { type: Number, get: parseString,set: parseNumber , required: false },
-        nextInstallment: { type: Number, get: parseString,set: parseNumber, required: false },
-        amountCollected: { type: Number, get: parseString,set: parseNumber, required: false },
+        installmentNumber: { type: Number, get: parseString, set: parseNumber ,required: false },
+        nextInstallment: { type: Number, get: parseString, set: parseNumber, required: false },
+        amountCollected: { type: Number, get: parseString, set: parseNumber, required: false },
         mode: { type: String, required: false }
     }, {_id: false, toJSON: {getters: true}, toObject: {getters: true}}),
 
-    active: {type: Boolean, default: false}
+    active: {type: Boolean, default: false},
+
+    anouncement: { type: String, default: '' }
 
 }, {toJSON: {getters: true}, toObject: {getters: true}});
 
 function parseNumber(value) {
-    if(value == '' || value == null) {
+    if(value == '') {
       return null
     }
     return parseInt(value);
   }
 
-function parseString(value) {
+  function parseString(value) {
     if(value == null) {
         return '';
     }

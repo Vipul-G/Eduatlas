@@ -25,16 +25,18 @@ instituteRouter.get('/course/batches/:branchId', checkAuth, couseConroller.getBa
 instituteRouter.get('/course/discounts/:branchId', checkAuth, couseConroller.getDiscounts);
 instituteRouter.get('/course/reciept/:branchId', checkAuth, couseConroller.getReciept);
 
-instituteRouter.patch('/course', checkAuth, couseConroller.updateCourse);
 instituteRouter.patch('/course/batch', checkAuth, couseConroller.updateBatch);
 instituteRouter.patch('/course/discount', checkAuth, couseConroller.updateDiscount);
 instituteRouter.patch('/course/reciept/:instituteId', checkAuth, couseConroller.updateReciept);
+instituteRouter.patch('/course', checkAuth, couseConroller.updateCourse);
+
 
 instituteRouter.delete('/course/course', checkAuth, couseConroller.deleteCourse);
 instituteRouter.delete('/course/batch', checkAuth, couseConroller.deleteBatch);
 instituteRouter.delete('/course/discount', checkAuth, couseConroller.deleteDiscount);
 instituteRouter.delete('/course/reciept/:instituteId', checkAuth, couseConroller.deleteReciept);
 
-
+//@make_anounce
+instituteRouter.post('/anouncement', checkAuth, instituteController.makeAnouncement);
 
 module.exports = instituteRouter; 

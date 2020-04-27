@@ -1,6 +1,5 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-
 const courseSchema = new Schema({
   name: {type: String, required: 'Branch name is requires', lowercase: true},
   code: {type: Number, unique: true, set: parseNumber},
@@ -16,7 +15,7 @@ const courseSchema = new Schema({
 
 const batchSchema = new Schema({
   course: {type: String, required: true},
-  code: {type: String, required: true},
+  code: {type: String, unique: true, required: true},
   description: {type: String}
 });
 
@@ -82,7 +81,7 @@ const instituteSchemsa = new Schema({
     reciept: { type: recieptConfigSchema, default: null }
 
 
-});
+}, {toJSON: {getters: true}, toObject: {getters: true}});
 
 function parseNumber(value) {
   if(value == '') {
@@ -90,5 +89,7 @@ function parseNumber(value) {
   }
   return parseInt(value);
 }
+
+
 
 module.exports = mongoose.model('Institute', instituteSchemsa);

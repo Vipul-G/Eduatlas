@@ -58,10 +58,21 @@ try {
         throw error; 
     }
 
-    const student = await Student.findOne({
-        instituteId: studentInfo.instituteId,
-        "basicDetails.email": studentInfo.studentEmail
-    });
+    let student;
+
+    if(studentInfo.anouncement) {
+
+        student = await Student.findOne({
+            instituteId: studentInfo.instituteId,
+            "basicDetails.email": studentInfo.studentEmail
+        }, { anouncement: 1, _id: 0 });
+
+    } else {
+        student = await Student.findOne({
+            instituteId: studentInfo.instituteId,
+            "basicDetails.email": studentInfo.studentEmail
+        });
+    }
 
     res.status(200).json({student});
 
@@ -83,6 +94,7 @@ try {
 
     const studentInfo = req.query;
 
+
     const {error, value} = schema('addStudent').validate(req.body);
     if(!studentInfo.instituteId || !studentInfo.studentEmail || error) {
         let err;
@@ -100,10 +112,12 @@ try {
     } else {
         req.body.active = false;
     }
+
+    
     const updatedStudent = await Student.findOneAndUpdate({
         instituteId: studentInfo.instituteId,
         "basicDetails.email": studentInfo.studentEmail
-    }, {$set: req.body}, { new: true});
+    }, {$set: req.body}, {new: true});
 
     res.status(200).json(updatedStudent);
 
