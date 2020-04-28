@@ -64,13 +64,13 @@ try {
 
         student = await Student.findOne({
             instituteId: studentInfo.instituteId,
-            "basicDetails.email": studentInfo.studentEmail
+            "basicDetails.studentEmail": studentInfo.studentEmail
         }, { anouncement: 1, _id: 0 });
 
     } else {
         student = await Student.findOne({
             instituteId: studentInfo.instituteId,
-            "basicDetails.email": studentInfo.studentEmail
+            "basicDetails.studentEmail": studentInfo.studentEmail
         });
     }
 
@@ -116,7 +116,7 @@ try {
     
     const updatedStudent = await Student.findOneAndUpdate({
         instituteId: studentInfo.instituteId,
-        "basicDetails.email": studentInfo.studentEmail
+        "basicDetails.studentEmail": studentInfo.studentEmail
     }, {$set: req.body}, {new: true});
 
     res.status(200).json(updatedStudent);
@@ -141,7 +141,7 @@ try {
     console.log('StudentInfo', studentInfo);
     await Student.findOneAndDelete({
         instituteId: studentInfo.instituteId,
-        "basicDetails.email": studentInfo.studentEmail 
+        "basicDetails.studentEmail": studentInfo.studentEmail 
     });
 
     res.status(202).json({ 'message': 'Student deleted successfully' });

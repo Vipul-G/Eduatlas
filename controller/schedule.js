@@ -2,6 +2,7 @@ const Schedule = require('../model/schedule.model');
 const errorHandler = require('./service/errorHandler');
 const schema = require('./service/joi');
 const response = require('./service/response');
+const ObjectId = require('mongoose').Types.ObjectId
 
 exports.addSchedule = async (req, res, next) => {
     try {
@@ -65,8 +66,22 @@ exports.getSchedule = async (req, res, next) => {
         }
         
         if (many == true) {
-
-            const schedules = await Schedule.find({ instituteId });
+            console.log('===================>', instituteId);
+            const schedules = await Schedule.aggregate([
+                { $match: { "instituteId": ObjectId(instituteId) } },
+                {
+                    $lookup: {
+                        from: "institutes",
+                        localField: "batchCode",
+                        foreignField: "batch.batchCode",
+                        as: "institute"
+                    }
+                },
+                { $project: {
+                    "_id": 1, "recurrence": 1, "letter": 1, "instituteId": 1, "scheduleStart": 1, "scheduleEnd": 1,
+                    "batchCode": 1, "topic": 1, "teacher": 1, "institute.batch": 1
+                } }
+            ]);
 
             res.status(200).json(schedules);
 
@@ -78,7 +93,21 @@ exports.getSchedule = async (req, res, next) => {
                 throw err;
             }
 
-            const schedule = await Schedule.findOne({instituteId, batchCode});
+            const schedule = await Schedule.aggregate([
+                { $match: { "instituteId": ObjectId(instituteId), "batchCode": batchCode } },
+                {
+                    $lookup: {
+                        from: "institutes",
+                        localField: "batchCode",
+                        foreignField: "batch.batchCode",
+                        as: "institute"
+                    }
+                },
+                { $project: {
+                    "_id": 1, "recurrence": 1, "letter": 1, "instituteId": 1, "scheduleStart": 1, "scheduleEnd": 1,
+                    "batchCode": 1, "topic": 1, "teacher": 1, "institute.batch": 1
+                } }
+            ]);
 
             res.status(200).json(schedule);
 

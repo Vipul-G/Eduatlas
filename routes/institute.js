@@ -6,6 +6,7 @@ const checkAuth = require('../middleware/checkAuth');
 const checkPayment = require('../middleware/checkPayment');
 const extractFile = require('../middleware/file');
 
+//@Institute_Routes
 instituteRouter.post('/addInstitute', checkAuth, checkPayment, extractFile, instituteController.addInstitute);
 instituteRouter.get('/all', checkAuth, checkPayment, instituteController.getAllInstitutes);
 instituteRouter.delete('/:id', checkAuth, instituteController.deleteInstitute);
@@ -44,5 +45,11 @@ instituteRouter.post('/anouncement', checkAuth, instituteController.makeAnouncem
 instituteRouter.post('/schedule', checkAuth, scheduleController.addSchedule);
 instituteRouter.put('/schedule', checkAuth, scheduleController.updateSchedule);
 instituteRouter.get('/schedule', checkAuth, scheduleController.getSchedule);
+
+//@Attendence_Routes
+instituteRouter.post('/attendence/:instituteId', checkAuth, instituteController.addAttendence);
+instituteRouter.patch('/attendence', checkAuth, instituteController.updateAttendence);
+instituteRouter.get('/attendence', checkAuth, instituteController.getAttendece);
+
 
 module.exports = instituteRouter; 

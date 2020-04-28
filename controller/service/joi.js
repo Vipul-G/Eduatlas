@@ -152,7 +152,14 @@ const schema = {
       scheduleStart: joi.string().allow(''),
       scheduleEnd: joi.string().allow(''),
       recurrence: joi.boolean()
-    }) 
+    }),
+
+    //@addAttendence schema
+    addAttendence: joi.object({
+      batchId: joi.string().required(),
+      allPresent: joi.boolean(),
+      absentStudents: joi.array().items(joi.string()).unique()
+    })
   }
 
   module.exports = function (SchemaName) {

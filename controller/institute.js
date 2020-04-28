@@ -2,7 +2,7 @@ const Institute = require('../model/institute.model');
 const Student = require('../model/student.model');
 const schema = require('./service/joi');
 const response = require('./service/response');
-const buffer = require('buffer').Buffer
+const errorHandler = require('./service/errorHandler');
 const fs = require('fs');
 
 function deleteImage({filename}) {
@@ -18,14 +18,12 @@ function deleteImage({filename}) {
 }
 
 function base64Converter(buff) {
-    // let typed_array = new Uint8Array(buff);
-    // const string_char = typed_array.reduce((data, byte) => {
-    //     return data + String.fromCharCode(byte);
-    // }, '');
-    
-    const buf = buffer.from(buff);
+    let typed_array = new Uint8Array(buff);
+    const string_char = typed_array.reduce((data, byte) => {
+        return data + String.fromCharCode(byte);
+    }, '');
+    return btoa(string_char);
 
-    return buf.toString('base64');
 }
 
 exports.addInstitute = async (req, res, next) => {
@@ -119,15 +117,11 @@ exports.getOneInstitute = async (req, res, next) => {
 exports.getAllInstitutes = async (req, res, next) => {
     try {
         const institutes = await Institute.find({ userPhone: req.user.phone });
-        const logo = institutes[0].basicInfo.logo.data;
-        res.status(200).json({
-            'institutes': institutes
-        })
+        res.status(200).json(institutes)
     } catch(error) {
         console.log(error);
         response(res, 500, error.message);
     }
-
 }
 
 exports.updateInstitute = async (req, res, next) => {
@@ -187,3 +181,103 @@ exports.makeAnouncement = async (req, res, next) => {
     }
 
 };
+
+
+//@Attendence APIs----------
+
+exports.addAttendence = async (req, res, next) => {
+
+    try {
+
+        const instituteId = req.params.instituteId;
+        const {error, value} = schema('addAttendence').validate(req.body);
+
+        if(error || !instituteId) {
+            let err;
+            if(error) {
+                console.log(error);
+                err = new Error('Wrong or Insufficient parameters provided');
+            } else {
+                err = new Error('Institute Id not provided');
+            }
+            err.statusCode = 400;
+            throw err;
+        }
+
+        await Institute.findByIdAndUpdate(instituteId, { $push: {attendence: req.body} });
+
+        response(res, 201, 'Attendence added successfully');
+
+    } catch(error) {
+        errorHandler(error, res);
+    }
+
+}
+
+exports.updateAttendence = async (req, res, next) => {
+
+    try{
+
+        const attendenceInfo = req.query;
+        const {error, value} = schema('addAttendence').validate(req.body);
+
+        if(!attendenceInfo.instituteId || !attendenceInfo.batchId || error) {
+            let err;
+            if(error) {
+                console.log(error);
+                err = new Error('Wrong or Insufficient parameters provided');
+                
+            } else {
+                err = new Error('Attendence information not provided');
+            }
+            err.statusCode = 400;
+            throw err;
+        }
+
+        await Institute.updateOne({
+            _id: attendenceInfo.instituteId,
+            "attendence.batchId": attendenceInfo.batchId
+        }, { $set: {"attendence.$": req.body} });
+
+        response(res, 200, 'Attendence updated successfuly');
+
+    } catch(error) {
+        errorHandler(error, res);
+    }
+
+};
+
+exports.getAttendece = async (req, res, next) => {
+
+    try{
+        const many = req.query.many;
+        const instituteId = req.query.instituteId;
+        let err = new Error();
+        err.statusCode = 400;
+        if(!many || !instituteId) {
+            err.message = '"many" or "instituteId" not provided';
+            throw err;
+        } 
+
+        if(many == true) {
+            const attendences = await Institute.findById(instituteId, {attendence: 1, _id: 0})
+            res.status(200).json(attendences);
+        } else {
+            const batchId = req.query.batchId;
+
+            if(!batchId) {
+                err.message = 'Batch Id not provided';
+                throw err;
+            }
+
+            const attendence = await Institute.findOne({"attendence.batchId": batchId});
+
+            res.status(200).json(attendence);
+
+        }
+    } catch(error) {
+        errorHandler(error, res);
+    }
+
+};
+
