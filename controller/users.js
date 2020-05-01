@@ -12,7 +12,7 @@ const errorHandler = require('../service/errorHandler');
 
 const sms = require('../config').sms;
 exports.creatUser = async (req, res, next) => {
-
+  delete req.body.otp;
   const {error, value} = schema('signup').validate(req.body, { abortEarly: true });
 
   if(error) {
@@ -120,22 +120,28 @@ function generateOTP() {
 exports.sendOtp = async (req, res, next) => {
   try {
 
-    if (!req.params.phone) {
+    const register = req.query.register;
+    const phone = req.params.phone;
+
+    if (!phone) {
       response(res, 400, 'Phone number not provided');
       return;
     }
-    const phone = req.params.phone;
-
-    const user = await User.findOne({phone})
-
-    if(!user) {
-      response(res, 404, 'User not found with ' + phone);
-      return;
-    }
     
-    sms.otp = '1234';//generateOTP();
+    if(!register || register == false) {
 
-    const smsRes = 'SMS send successfully'//await smsService.sendSms(phone, exports.OTP); 
+      const user = await User.findOne({phone});
+
+      if(!user) {
+        response(res, 404, 'User not found with ' + phone);
+        return;
+      }
+
+    } 
+    
+    sms.otp = generateOTP();
+
+    const smsRes = await smsService.sendSms(phone, 'Your OTP (One Time Password): ' + sms.otp); 
 
     response(res, 200, smsRes + ' to ' + phone);
   } catch(error) {
@@ -155,9 +161,6 @@ exports.resetPassword = async (req, res, next) => {
       err.statusCode = 400;
       throw err;
     }
-    console.log('++++++++++++++++');
-    
-
     bcrypt.hash(req.body.password, 10)
     .then(hash => {
         req.body.password = hash;
