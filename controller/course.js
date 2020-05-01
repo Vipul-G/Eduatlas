@@ -1,6 +1,6 @@
 const Institute = require('../model/institute.model');
-const schema = require('./service/joi');
-const response = require('./service/response');
+const schema = require('../service/joi');
+const response = require('../service/response');
 
 exports.addCourse = async (req, res, next) => {
     try{

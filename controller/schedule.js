@@ -1,8 +1,7 @@
 const Schedule = require('../model/schedule.model');
-const errorHandler = require('./service/errorHandler');
-const schema = require('./service/joi');
-const response = require('./service/response');
-const ObjectId = require('mongoose').Types.ObjectId
+const errorHandler = require('../service/errorHandler');
+const schema = require('../service/joi');
+const response = require('../service/response');
 
 exports.addSchedule = async (req, res, next) => {
     try {
@@ -26,14 +25,6 @@ exports.addSchedule = async (req, res, next) => {
 
 exports.updateSchedule =  async (req, res, next) => {
     try {
-
-        // const scheduleId = req.params.scheduleId;
-
-        // if(!scheduleId) {
-        //     const err = new Error('scheduleId not provided')
-        //     err.statusCode = 400;
-        //     throw err;
-        // }
 
         const scheduleInfo = req.query;
         
@@ -66,9 +57,8 @@ exports.getSchedule = async (req, res, next) => {
         }
         
         if (many == true) {
-            console.log('===================>', instituteId);
+
             const schedules = await Schedule.aggregate([
-                { $match: { "instituteId": ObjectId(instituteId) } },
                 {
                     $lookup: {
                         from: "institutes",
@@ -94,7 +84,7 @@ exports.getSchedule = async (req, res, next) => {
             }
 
             const schedule = await Schedule.aggregate([
-                { $match: { "instituteId": ObjectId(instituteId), "batchCode": batchCode } },
+                { $match: { "batchCode": batchCode } },
                 {
                     $lookup: {
                         from: "institutes",
@@ -118,3 +108,25 @@ exports.getSchedule = async (req, res, next) => {
     }
 }
 
+exports.deleteSchedule = async (req, res, next) => {
+    try {
+
+        const scheduleInfo = req.query;
+        
+        if(!scheduleInfo.instituteId || !scheduleInfo.batchCode) {
+            const err = new Error('schedule information not provided')
+            err.statusCode = 400;
+            throw err;
+        }        
+
+        await Schedule.deleteOne({
+            instituteId: scheduleInfo.instituteId,
+            batchCode: scheduleInfo.batchCode
+        });
+
+        response(res, 200, 'Schedule deleted successfully');
+
+    } catch(error) {
+       errorHandler(error, res);
+    }
+}

@@ -1,8 +1,8 @@
 const Institute = require('../model/institute.model');
 const Student = require('../model/student.model');
-const schema = require('./service/joi');
-const response = require('./service/response');
-const errorHandler = require('./service/errorHandler');
+const schema = require('../service/joi');
+const response = require('../service/response');
+const errorHandler = require('../service/errorHandler');
 const fs = require('fs');
 
 function deleteImage({filename}) {

@@ -3,9 +3,14 @@ const bcrypt = require('bcrypt');
 const User = require('../model/user.model');
 const jwt = require("jsonwebtoken");
 
-const schema = require('./service/joi');
-const response = require('./service/response');
+const schema = require('../service/joi');
+const response = require('../service/response');
 
+const smsService = require('../service/sms');
+
+const errorHandler = require('../service/errorHandler');
+
+const sms = require('../config').sms;
 exports.creatUser = async (req, res, next) => {
 
   const {error, value} = schema('signup').validate(req.body, { abortEarly: true });
@@ -103,43 +108,41 @@ exports.findUser = async (req, res) => {
   }
 }
 
-
+function generateOTP() { 
+  var digits = '0123456789'; 
+  let OTP = ''; 
+  for (let i = 0; i < 4; i++ ) { 
+      OTP += digits[Math.floor(Math.random() * 10)]; 
+  } 
+  setTimeout(() => { sms.otp = -1 }, 60050);
+  return OTP; 
+} 
 exports.sendOtp = async (req, res, next) => {
   try {
 
-    if (!req.body.phone) {
+    if (!req.params.phone) {
       response(res, 400, 'Phone number not provided');
       return;
     }
-    const phone = req.body.phone;
+    const phone = req.params.phone;
 
     const user = await User.findOne({phone})
 
     if(!user) {
-      response(res, 404, 'User not found');
+      response(res, 404, 'User not found with ' + phone);
       return;
     }
-    exports.otp = 1234;
-    response(res, 200, 'OTP has been send to ' + phone);
+    
+    sms.otp = '1234';//generateOTP();
+
+    const smsRes = 'SMS send successfully'//await smsService.sendSms(phone, exports.OTP); 
+
+    response(res, 200, smsRes + ' to ' + phone);
   } catch(error) {
     console.log(error);
     response(res, 500, 'Internal server error');
   }
 };
-
-// exports.forgotPassword = async (req, res, next) => {
-
-//   if(!req.body.otp) {
-//     response(res, 400, 'No OTP provided')
-//   }
-
-//   if (req.body.otp === otp) {
-//     response(res, 200, 'OTP validation successfull')
-//   } else {
-//     response(res, 404, ' OTP validation failed')
-//   }
-
-// }
 
 exports.resetPassword = async (req, res, next) => {
 
@@ -147,26 +150,29 @@ exports.resetPassword = async (req, res, next) => {
     const {error, value} = schema('resetPassword').validate(req.body);
 
     if (error) {
-      response(res, 400, 'Wrong/Insufficient parameters provided');
-      return;
+      console.log(error);
+      const err = new Error('Wrong or Insufficient parameter provided');
+      err.statusCode = 400;
+      throw err;
     }
+    console.log('++++++++++++++++');
+    
 
-    const updatedUser = await User.updateOne({phone : req.body.phone}, {password : req.body.password});
+    bcrypt.hash(req.body.password, 10)
+    .then(hash => {
+        req.body.password = hash;
+        return User.updateOne({phone : +req.body.phone}, {password : req.body.password});
+        
+     }).then((updatedUser) => {
+      response(res, 200, 'Password updated successfully');
+     }).catch(next);
 
-    if(updatedUser) {
-      response(res, 201, 'User updated successfully');
-    }
-
-
+    
   } catch(error) {
-    console.log(error);
-    response(res, 500, 'Internal Server error');
+    errorHandler(error);
   }
 
 }
-
-
-
 // exports.deleteAllUsers = async (req, res, next) => {
 //   await User.deleteMany({});
 //   res.status(200).json({ 'message': 'All deleted' })

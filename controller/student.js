@@ -1,5 +1,5 @@
-const response = require('./service/response')
-const schema = require('./service/joi');
+const response = require('../service/response')
+const schema = require('../service/joi');
 const Student = require('../model/student.model');
 
 exports.addStudent = async (req, res, next) => {
