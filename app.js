@@ -9,7 +9,7 @@ const cors = require('cors');
 const mongoose = require('mongoose');
 const app = express();
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 5000;
 
 app.use((req, res, next) => {
   res.setHeader('Access-Control-Allow-Origin', '*');
@@ -42,7 +42,6 @@ mongoose.connect("mongodb://localhost:27017/Eduatlas"
   console.error('Connection failed', '\n');
   console.log(reason);
 });
-console.log('=================================================')
 
 app.use('/', indexRouter);
 app.use('/users', require('./routes/users'));

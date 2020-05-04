@@ -9,10 +9,9 @@ const response = require('../service/response');
 const smsService = require('../service/sms');
 
 const errorHandler = require('../service/errorHandler');
-
+let newUser; // for create user api and otp varify api
 const sms = require('../config').sms;
 exports.creatUser = async (req, res, next) => {
-  delete req.body.otp;
   const {error, value} = schema('signup').validate(req.body, { abortEarly: true });
 
   if(error) {
@@ -26,18 +25,14 @@ exports.creatUser = async (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
     .then(hash => {
         req.body.password = hash;
-        const user = new User(req.body);
-        user.save().then(result => {
-            res.status(201).json({
-                message: 'User created',
-                result
-            });
+        newUser = new User(req.body);
+        response(res, 200, 'Varify OTP now')
         }).catch(err => {
             console.log(err);
             res.status(500).json({
                 message: 'Invalid authentication credentials!'
             });
-        });
+        
     });
 };
 
@@ -139,9 +134,9 @@ exports.sendOtp = async (req, res, next) => {
 
     } 
     
-    sms.otp = generateOTP();
+    sms.otp = '1234'//generateOTP();
 
-    const smsRes = await smsService.sendSms(phone, 'Your OTP (One Time Password): ' + sms.otp); 
+    const smsRes = 'OTP send'//await smsService.sendSms(phone, 'Your OTP (One Time Password): ' + sms.otp); 
 
     response(res, 200, smsRes + ' to ' + phone);
   } catch(error) {
@@ -176,6 +171,61 @@ exports.resetPassword = async (req, res, next) => {
   }
 
 }
+
+exports.varyfyOTP = async (req, res, next) => {
+  try {
+  const type = req.query.varifyType;
+  const isVarify = req.query.isVarify;
+  const clientOTP = req.query.otp;
+  
+  if(!clientOTP || !type) {
+    response(res, 400, 'Insufficient or Wrong parameters provided');
+  }
+
+  const otp = require('../config').sms.otp;
+  if(otp < 0) {
+      response(res, 400, 'OTP has not been generated yet');
+      next(new Error('OTP has not been generated yet'));
+  }
+  else if(!clientOTP || otp == null) {
+      (otp == null) ?
+    response(res, 400, 'OTP Expired') :
+    response(res, 400, 'OTP not provided');
+      next(new Error('OTP Error'));
+  }
+  else if(otp !==clientOTP) {
+      response(res, 400, 'Incorrect OTP');
+      next(new Error('Incorrect OTP'));
+  } 
+  else if(otp ===clientOTP) {
+      if(type == 'creatUser') {
+        newUser.save().then((result) => {
+          res.status(201).json({
+            'message': 'User created',
+            result
+          }).catch(next);
+        })
+        return;
+      } else if(type == 'forgotPassword') {
+        if(isVarify == true) {
+          response(res,200, 'OTP varified');
+          return;
+        }
+        next();
+        return;
+      } else {
+        response(res, 400, 'Varification type is not valid');
+        return;
+      }
+  }
+  else {
+      next(new Error('Unknown OTP error'));
+  }
+} catch(error) {
+  errorHandler(error, res);
+}
+
+};
 // exports.deleteAllUsers = async (req, res, next) => {
 //   await User.deleteMany({});
 //   res.status(200).json({ 'message': 'All deleted' })
