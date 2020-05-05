@@ -10,7 +10,7 @@ const smsService = require('../service/sms');
 
 const errorHandler = require('../service/errorHandler');
 
-const {OneTimePassword, NewUser, getKeyByValue} = require('../clientStore');
+const {OneTimePassword, NewUser, getKeyByValue, user_role} = require('../clientStore');
 
 exports.creatUser = async (req, res, next) => {
   try {
@@ -117,7 +117,7 @@ function generateOTP(ph) {
   // for (let i = 0; i < 4; i++ ) { 
   //     OTP += digits[Math.floor(Math.random() * 10)]; 
   // } 
-  setTimeout(() => { OneTimePassword.deleteOTP(ph) }, 60050);
+  //setTimeout(() => { OneTimePassword.deleteOTP(ph) }, 60050);
   //return OTP; 
   return '1234';
 } 
@@ -189,6 +189,7 @@ exports.varyfyOTP = async (req, res, next) => {
   const clientOTP = req.query.otp;
   
   if(!clientOTP || !type || !phone) {
+    console.log('==============>',req.query)
     return response(res, 400, 'Insufficient or Wrong parameters provided');
   }
 

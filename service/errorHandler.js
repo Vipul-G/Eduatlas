@@ -1,3 +1,4 @@
+const response = require('../service/response');
 function errorHandler(error, res) {
     const statusCode = error.statusCode || 500;
     if(statusCode === 500) {

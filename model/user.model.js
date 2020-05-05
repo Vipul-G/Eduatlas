@@ -5,26 +5,22 @@ const {user_role} = require('../clientStore');
 // User registration schema
 const userSchema = mongoose.Schema({
 
-    name: {type: String, required: () => {
-      return (this.role < 3) ? false : true;
-    }},
-    email:  {
+  role : { type: Number,set: parseRole, required: [true, 'Role is required']},
+
+  name: {type: String},
+
+  email:  {
         type: String,
         sparse: true,
         unique:true
-    },
-    phone: { type: Number, unique:true, set: parseNumber, required: [true, 'Phone is required'], minlength: 10, maxlength: 10 },
+  },
 
-    password: { type: String, required: [true, 'Password is required'] },
+  phone: { type: Number, unique:true, set: parseNumber, required: [true, 'Phone is required'], minlength: 10, maxlength: 10 },
 
-    role : { type: Number,set: (value) => {
-      if(typeof parseInt(value, 10) == 'number') {
-        return parseInt(value, 10);
-      }
-      return user_role[value.toLowerCase()]
-    }, required: [true, 'Role is required']},
+  password: { type: String, required: [true, 'Password is required'] },
 
-    login: { type: Boolean, default: false }
+  login: { type: Boolean, default: false }
+
 }, {toJSON: {getters: true}, toObject: {getters: true}});
 function parseNumber(value) {
     if(value == '') {
@@ -32,6 +28,16 @@ function parseNumber(value) {
     }
     return parseInt(value);
   }
+
+function parseRole(value) {
+  
+  const roleCode = user_role[value];
+  console.log('====parseRole====>', value, roleCode);
+  if(roleCode === undefined) {
+    return value;
+  }  
+  return roleCode;
+}
 
 module.exports = mongoose.model('User', userSchema);
 
