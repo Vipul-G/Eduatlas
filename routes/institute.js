@@ -5,7 +5,8 @@ const scheduleController = require('../controller/schedule');
 const checkAuth = require('../middleware/checkAuth');
 const checkPayment = require('../middleware/checkPayment');
 const extractFile = require('../middleware/file');
-
+const roleController = require('../controller/role');
+const {varyfyOTP} = require('../controller/users');
 //@Institute_Routes
 instituteRouter.post('/addInstitute', checkAuth, checkPayment, extractFile, instituteController.addInstitute);
 instituteRouter.get('/all', checkAuth, checkPayment, instituteController.getAllInstitutes);
@@ -51,5 +52,7 @@ instituteRouter.post('/attendence/:instituteId', checkAuth, instituteController.
 instituteRouter.patch('/attendence', checkAuth, instituteController.updateAttendence);
 instituteRouter.get('/attendence', checkAuth, instituteController.getAttendece);
 
+//@Role_assigne
+instituteRouter.post('/role', checkAuth, roleController.assignRole);
 
 module.exports = instituteRouter; 

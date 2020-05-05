@@ -8,6 +8,7 @@ module.exports = (req, res, next) => {
     req.user = {};
     req.user._id = decodedToken._id;
     req.user.phone = decodedToken.phone;
+    req.user.role = decodedToken.role;
     next();
   } catch(error) {
     console.log(error);

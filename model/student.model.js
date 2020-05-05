@@ -1,10 +1,12 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+// student schema
 const studentSchema = new Schema({
 
     instituteId : { type: Schema.Types.ObjectId, require: 'Institude Id not provided', ref: 'Institute' },
 
+    // basic details of student
     basicDetails : new Schema({
 
         name: { type: String, required: 'Name is required' },
@@ -14,6 +16,7 @@ const studentSchema = new Schema({
 
     }, {_id: false, toJSON: {getters: true}, toObject: {getters: true}}),
 
+    // student parent details
     parentDetails : new Schema({
 
         name: { type: String, lowercase: true, default: '' },
@@ -23,6 +26,7 @@ const studentSchema = new Schema({
 
     }, {_id: false, toJSON: {getters: true}, toObject: {getters: true}}),
 
+    // student course details
     courseDetails : new Schema({
 
         course: { type: String, default: '' },
@@ -33,6 +37,7 @@ const studentSchema = new Schema({
 
     }, {_id: false, toJSON: {getters: true}, toObject: {getters: true}}),
 
+    // student fees
     fee: new Schema({
         installmentNumber: { type: Number, get: parseString, set: parseNumber ,required: false },
         nextInstallment: { type: Number, get: parseString, set: parseNumber, required: false },

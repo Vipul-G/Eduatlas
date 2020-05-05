@@ -9,11 +9,12 @@ const response = require('../service/response');
 const smsService = require('../service/sms');
 
 const errorHandler = require('../service/errorHandler');
-let newUser; // for create user api and otp varify api
-const sms = require('../config').sms;
-exports.creatUser = async (req, res, next) => {
-  const {error, value} = schema('signup').validate(req.body, { abortEarly: true });
 
+const {OneTimePassword, NewUser, getKeyByValue} = require('../clientStore');
+
+exports.creatUser = async (req, res, next) => {
+  try {
+  const {error, value} = schema('signup').validate(req.body, { abortEarly: true });
   if(error) {
     console.log(error);
     res.status(400).json({
@@ -25,7 +26,7 @@ exports.creatUser = async (req, res, next) => {
     bcrypt.hash(req.body.password, 10)
     .then(hash => {
         req.body.password = hash;
-        newUser = new User(req.body);
+        new NewUser(req.body.phone, new User(req.body))
         response(res, 200, 'Varify OTP now')
         }).catch(err => {
             console.log(err);
@@ -34,8 +35,10 @@ exports.creatUser = async (req, res, next) => {
             });
         
     });
+  } catch(error) {
+    console.log(error);
+  }
 };
-
 
 exports.loginUser = async (req, res, next) => {
 
@@ -65,7 +68,11 @@ exports.loginUser = async (req, res, next) => {
           message: 'Authentication failed'
         });
       }
-      const token = jwt.sign({phone: fetchedUser.phone, userId: fetchedUser._id}, "specify jwt-key here");
+      const token = jwt.sign({
+        phone: fetchedUser.phone,
+        userId: fetchedUser._id,
+        role: fetchedUser.role
+      }, "specify jwt-key here");
 
 
 
@@ -73,7 +80,8 @@ exports.loginUser = async (req, res, next) => {
         token,
         expiresIn: 3600,
         phone: fetchedUser.phone,
-        userName: fetchedUser.name
+        userName: fetchedUser.name,
+        role: getKeyByValue(user_role, fetchedUser.role)
       });
     })
     .catch(err => {
@@ -103,14 +111,15 @@ exports.findUser = async (req, res) => {
   }
 }
 
-function generateOTP() { 
-  var digits = '0123456789'; 
-  let OTP = ''; 
-  for (let i = 0; i < 4; i++ ) { 
-      OTP += digits[Math.floor(Math.random() * 10)]; 
-  } 
-  setTimeout(() => { sms.otp = -1 }, 60050);
-  return OTP; 
+function generateOTP(ph) { 
+  // var digits = '0123456789'; 
+  // let OTP = ''; 
+  // for (let i = 0; i < 4; i++ ) { 
+  //     OTP += digits[Math.floor(Math.random() * 10)]; 
+  // } 
+  setTimeout(() => { OneTimePassword.deleteOTP(ph) }, 60050);
+  //return OTP; 
+  return '1234';
 } 
 exports.sendOtp = async (req, res, next) => {
   try {
@@ -123,7 +132,7 @@ exports.sendOtp = async (req, res, next) => {
       return;
     }
     
-    if(!register || register == false) {
+    if(!register || register == false) { // forgot password case
 
       const user = await User.findOne({phone});
 
@@ -132,11 +141,11 @@ exports.sendOtp = async (req, res, next) => {
         return;
       }
 
-    } 
+    }
     
-    sms.otp = '1234'//generateOTP();
+    new OneTimePassword(phone, generateOTP(phone));
 
-    const smsRes = 'OTP send'//await smsService.sendSms(phone, 'Your OTP (One Time Password): ' + sms.otp); 
+    const smsRes = 'SMS has been send'//await smsService.sendSms(phone, 'Your OTP (One Time Password): ' + OneTimePassword.getOTP(phone)); 
 
     response(res, 200, smsRes + ' to ' + phone);
   } catch(error) {
@@ -176,19 +185,20 @@ exports.varyfyOTP = async (req, res, next) => {
   try {
   const type = req.query.varifyType;
   const isVarify = req.query.isVarify;
+  const phone = req.query.phone;
   const clientOTP = req.query.otp;
   
-  if(!clientOTP || !type) {
-    response(res, 400, 'Insufficient or Wrong parameters provided');
+  if(!clientOTP || !type || !phone) {
+    return response(res, 400, 'Insufficient or Wrong parameters provided');
   }
 
-  const otp = require('../config').sms.otp;
-  if(otp < 0) {
-      response(res, 400, 'OTP has not been generated yet');
+  const otp = OneTimePassword.getOTP(phone);
+  if(!otp) {
+      response(res, 400, `OTP for ${phone} has not been generated yet`);
       next(new Error('OTP has not been generated yet'));
   }
-  else if(!clientOTP || otp == null) {
-      (otp == null) ?
+  else if(!clientOTP || otp<0) {
+      (otp < 0) ?
     response(res, 400, 'OTP Expired') :
     response(res, 400, 'OTP not provided');
       next(new Error('OTP Error'));
@@ -199,12 +209,13 @@ exports.varyfyOTP = async (req, res, next) => {
   } 
   else if(otp ===clientOTP) {
       if(type == 'creatUser') {
-        newUser.save().then((result) => {
+        NewUser.saveUser(phone).then((result) => {
           res.status(201).json({
             'message': 'User created',
             result
-          }).catch(next);
-        })
+          })
+          NewUser.deleteUser(phone);
+        }).catch(next)
         return;
       } else if(type == 'forgotPassword') {
         if(isVarify == true) {
@@ -213,7 +224,15 @@ exports.varyfyOTP = async (req, res, next) => {
         }
         next();
         return;
-      } else {
+      } else if(type == 'roleAssign') {
+          const newUser = await NewUser.saveUser(phone);
+          res.status(200).json({
+            'message': 'Role user created successfully',
+            newUser
+          });
+          return;
+      }
+      else {
         response(res, 400, 'Varification type is not valid');
         return;
       }

@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
 
+// course schema
 const courseSchema = new Schema({
   name: {type: String, required: 'Branch name is requires', lowercase: true},
   courseCode: {type: String, unique: true, required: true},
@@ -14,20 +15,22 @@ const courseSchema = new Schema({
   totalFee: {type: Number, get: parseString, set: parseNumber}
 }, {toJSON: {getters: true}, toObject: {getters: true}});
 
+// batch schema
 const batchSchema = new Schema({
   course: {type: String, required: true},
   batchCode: {type: String, unique: true, required: true},
   description: {type: String}
 });
 
+// discount schema
 const discountSchema = new Schema({
   discountCode: {type: String},
   description: {type: String},
   amount: {type: Number, get: parseString, set: parseNumber}
 }, {toJSON: {getters: true}, toObject: {getters: true}});
 
-
-const attendencySchema = new Schema({
+// Attendence schema
+const attendenceSchema = new Schema({
 
   batchId: {type: Schema.Types.ObjectId, required: true},
 
@@ -37,6 +40,7 @@ const attendencySchema = new Schema({
 
 });
 
+// Reciept schema
 const recieptConfigSchema = new Schema({
   businessName: { type: String },
 
@@ -51,6 +55,8 @@ const recieptConfigSchema = new Schema({
 
 }, {_id: false, toJSON: {getters: true}, toObject: {getters: true}});
 
+
+// institute schema
 const instituteSchemsa = new Schema({
     basicInfo: new Schema({
         logo:  { data: Buffer, contentType: String},
@@ -92,7 +98,7 @@ const instituteSchemsa = new Schema({
 
     reciept: { type: recieptConfigSchema, default: null },
 
-    attendence: { type: [attendencySchema], default: [] }
+    attendence: { type: [attendenceSchema], default: [] }
 
 
 }, {toJSON: {getters: true}, toObject: {getters: true}});
