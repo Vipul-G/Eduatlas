@@ -81,7 +81,8 @@ exports.loginUser = async (req, res, next) => {
         expiresIn: 3600,
         phone: fetchedUser.phone,
         userName: fetchedUser.name,
-        role: getKeyByValue(user_role, fetchedUser.role)
+        role: getKeyByValue(user_role, fetchedUser.role),
+        instituteId: fetchedUser.instituteId
       });
     })
     .catch(err => {

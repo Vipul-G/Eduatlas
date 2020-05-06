@@ -247,6 +247,26 @@ exports.updateAttendence = async (req, res, next) => {
 
 };
 
+// exports.deleteAttendence = async (req, res, next) => {
+//     try {
+
+//         const batchId = req.params.batchId;
+
+//         if(!batchId) {
+//             response(res, 400, 'Batch id not provided');
+//             next(new Error('Batch id not provided'));
+//         }
+
+//         await Institute.updateOne({
+//             _id: attendenceInfo.instituteId,
+//             "attendence.batchId": attendenceInfo.batchId
+//         }, { $set: {"attendence.$": req.body} });
+
+//     } catch(error) {
+//         errorHandler(error, res);
+//     }
+// };
+
 exports.getAttendece = async (req, res, next) => {
 
     try{

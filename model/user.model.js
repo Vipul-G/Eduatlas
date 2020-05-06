@@ -7,6 +7,8 @@ const userSchema = mongoose.Schema({
 
   role : { type: Number,set: parseRole, required: [true, 'Role is required']},
 
+  instituteId: { type: mongoose.Schema.Types.ObjectId, ref: 'Institute'},
+
   name: {type: String},
 
   email:  {

@@ -164,7 +164,8 @@ const schema = {
     assignRole: joi.object({
       phone: joi.custom(checkPhoneSignup, 'Phone is required for role assign'),
       password: joi.string().pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required(),
-      role: joi.string().required()
+      role: joi.string().required(),
+      instituteId: joi.string().required()
     })
   }
 
