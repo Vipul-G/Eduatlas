@@ -16,10 +16,20 @@ exports.addCourse = async (req, res, next) => {
             err.statusCode = 400;
             throw err;
         }
+        const updatedInstitute = await Institute.updateOne({
+            _id: branchId,
+            "course.courseCode": { $ne : req.body.courseCode }
+        }, { $push: { course: req.body }});
+        console.log('=======>', updatedInstitute)
+        if(updatedInstitute.nModified > 0 ) {
+            
+            return res.status(200).json({'message': 'Course added successfully'});
+
+        }
+
+        response(res, 409, 'Course code already exists');
     
-        const updatedInstitute = await Institute.findByIdAndUpdate(branchId, { $push: { course: req.body } }, { new: true });
-    
-        res.status(204).json({'course': updatedInstitute.course});
+        
     } catch(error) {
         console.log(error);
         response(res, error.statusCode || 500, error.message);
@@ -138,9 +148,17 @@ exports.addBatch = async (req, res, next) => {
             throw error;
         }
 
-        const updatedInstitute = await Institute.findByIdAndUpdate(branchId, { $push: { batch: req.body } }, { new: true });
 
-        res.status(204).json({ 'batch': updatedInstitute.batch });
+        const updatedInstitute = await Institute.updateOne({
+            _id: branchId,
+            "batch.batchCode": { $ne : req.body.batchCode }
+        }, { $push: { batch: req.body }});
+
+        if(updatedInstitute.nModified > 0) { 
+            return res.status(200).json({'message': 'Batch added successfully'});
+        }
+        response(res, 409, 'Batch code already exists')
+        
     } catch(error) {
         console.log(error);
         response(res, error.statusCode || 500, error.message);
@@ -258,9 +276,16 @@ exports.addDiscount = async (req, res, next) => {
             throw err;
         }
 
-        const updatedInstitute = await Institute.findByIdAndUpdate(branchId, { $push: { discount: req.body } }, { new: true });
+        const updatedInstitute = await Institute.updateOne({
+            _id: branchId,
+            "batch.discountCode": { $ne : req.body.discountCode }
+        }, { $push: { discount: req.body }});
 
-        res.status(201).json({ 'discount': updatedInstitute });
+        if(updatedInstitute.nModified > 0) {
+            
+           return res.status(201).json({ 'message': 'Discount added successfully'});
+        }
+        response(res, 409, 'Discount code already exists');
     } catch(error) {
         console.log(error);
         response(res, error.statusCode || 500, error.message);

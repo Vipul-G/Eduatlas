@@ -47,7 +47,9 @@ const studentSchema = new Schema({
 
     active: {type: Boolean, default: false},
 
-    anouncement: { type: String, default: '' }
+    anouncement: { type: String, default: '' },
+
+    materialRecord: {type: String, default: null}
 
 }, {toJSON: {getters: true}, toObject: {getters: true}});
 

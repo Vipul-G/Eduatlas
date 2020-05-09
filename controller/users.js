@@ -113,14 +113,13 @@ exports.findUser = async (req, res) => {
 }
 
 function generateOTP(ph) { 
-  // var digits = '0123456789'; 
-  // let OTP = ''; 
-  // for (let i = 0; i < 4; i++ ) { 
-  //     OTP += digits[Math.floor(Math.random() * 10)]; 
-  // } 
-  //setTimeout(() => { OneTimePassword.deleteOTP(ph) }, 60050);
-  //return OTP; 
-  return '1234';
+  var digits = '0123456789'; 
+  let OTP = ''; 
+  for (let i = 0; i < 4; i++ ) { 
+      OTP += digits[Math.floor(Math.random() * 10)]; 
+  } 
+  setTimeout(() => { OneTimePassword.deleteOTP(ph) }, 60050);
+  return OTP; 
 } 
 exports.sendOtp = async (req, res, next) => {
   try {
@@ -146,7 +145,7 @@ exports.sendOtp = async (req, res, next) => {
     
     new OneTimePassword(phone, generateOTP(phone));
 
-    const smsRes = 'SMS has been send'//await smsService.sendSms(phone, 'Your OTP (One Time Password): ' + OneTimePassword.getOTP(phone)); 
+    const smsRes = await smsService.sendSms(phone, 'Your OTP (One Time Password): ' + OneTimePassword.getOTP(phone)); 
 
     response(res, 200, smsRes + ' to ' + phone);
   } catch(error) {

@@ -1,0 +1,255 @@
+#SERVER
+
+To run the server Node version 12.* or higher is required
+
+Dependencies
+
+1. @hapi/joi
+2. bcrypt
+3. cookie-parser
+4. cors
+5. debug
+6. express
+7. jsonwebtoken
+8. mongoose
+9. morgan
+10. multer
+11. axios
+12. nodemon( development Dependencies)
+
+Installation command: 
+
+For production mode - "npm install --production".
+For development mode - "npm install"
+
+Project Structure:-
+directories:
+
+1. Controller directory
+
+    It contains all the business logic.
+    The JOI-schema(inside service/joi) has been used to validate the "req.body" if passed to the API. 
+
+Files inside the directory:
+
+1.1 users.js 
+This file contains the following APIs
+* creatUser API: Creates new user either role-based or otherwise
+
+* loginUser API: Log in the user and returns Json Web Token
+
+* findUser API: Returns a single user based on the phone number provided in the query params
+
+* sendOTP API: Sends unique OTP to the user's mobile number.
+    Takes two query parameters
+    1. phone(string number) - The phone number to which OTP needs to be sent.
+    2. register(boolean) - It tells the API whether the OTP is being sent for registration purpose or otherwise
+
+* varifyOTP API: Varifies the OTP. This might act as middleware or an end-point depending on query parameters passed.
+    Takes four query parameters
+    1. clientOTP(string number) - The OTP needs to be verified.
+    2. phone(string number) - The number to which OTP sent.
+    3. type(string) - "type" conveys the objective of OTP verification so that API can execute respective login.
+        "type" can only be one of the following "creatUser", "forgotPassword" or "roleAssign"
+    4. isVarify(boolean) - This parameter is only relevant in case when "type" is "forgotPassword". It tells the API whether to respond with verification message only or pass the control to the next middleware/function.
+
+* resetPassword API: Resets the user's password once OTP is verified.
+
+* deleteUser API: To delete the user. Requires institutional authorization.
+
+* updateUser API: To update the user. Requires institutional authorization.
+
+1.2 institute.js
+This file contains the following APIs.
+
+*addInstitute API: Adds(creats) new institute. The "req.body" is validated against joi schema named "addInstitute".
+
+*deleteInstitute API: Deletes the institute based upon id passed in "req.param".
+
+*getOneInstitute API: It retrieves and sends one institute based upon "id" passed in "req.param".
+
+*getAllInstitute API: It retrieves and sends all the institutes belongs to the phone number inside "req.user.phone".
+    The "req.user" object is populated by a middleware named "checkAuth".
+
+*updateInstitute API: Updates the institute based upon "id " passed inside "req.param.id".
+
+*makeAnouncement API: The API makes an announcement either to the institutes, students or both depending upon
+    "instituteIds" and "studentEmails" passed inside "req.body".
+
+*addAttendence API: To store the attendence of an institute. The "req.body" is validated against joi schema
+    named "addAttendence". API require "instituteId" inside "req.param".
+
+*updateAttendence API: To update the attendence. The "req.body" is validated against joi schema
+    named "addAttendence".
+    Requires object named "attendenceInfo" inside "req.query". The "attendenceInfo" will have the properties
+    "instituteId" and "batchId".
+
+*deleteAttendence API: To delete the attendance of specific batch which is identified by a "batchId" provided
+    inside "req.param".
+
+*getAttendence API: The API can send a single attendance of a batch or all the attendance belongs to the institute 
+    Requires following query parameter
+    1. institudeId(ObjectId) - Id of an institute
+    2. many(boolean) - tells the API whether to fetch one attendance or multiple attendances.
+    3. batchId(ObjectId) - Batch id of a batch of an institute. Only relevant if "many" is false. 
+
+
+1.3 course.js
+
+*addCourse API: Adds course for institute branch. The "req.body" is validated against joi schema named
+    "addCourse". 
+   
+
+*deleteCourse API: Deletes the course of a branch.
+     Requires two query parameter
+    1. instituteId(ObjectId)
+    2. courseId(ObjectId)
+
+*updateCourse API: Updates the course of a branch.
+     Requires two query parameter
+    1. instituteId(ObjectId)
+    2. courseId(ObjectId)
+
+*getCourse API: Retrieves and sends a course of a branch.
+    Requires two query parameter
+    1. instituteId(ObjectId)
+    2. courseId(ObjectId)
+
+*getCourses API: Retrieves and sends all the courses belongs to a branch.
+    Requires "branchId" inside "req.param".
+
+*addBatch API: Adds batch of course. The "req.body" is validated against joi schema named "addBatch".
+    Requires "branchId" inside "req.param".
+
+*updateBatch API: Updated the batch.
+    Requires two query parameters.
+    1. institudeId
+    2. batchId
+
+*deleteBatch API: Deletes the batch.
+    Requires two query parameters.
+    1. institudeId
+    2. batchId
+*getBatch API: Retrieves and sends a batch of the institute.
+    Requires two query parameters.
+    1. institudeId
+    2. batchId
+*getBatches API: Retrieves and sends all the batches belongs to the branch.
+    Requires "branchId" inside "req.param".
+
+*addDiscount API: Adds discount to a branch. Requires "branchId" inside "req.param"
+
+*deleteDiscount API: Deletes discount from a branch. 
+    Requires two query parameters
+    1. instituteId
+    2. discountId
+*updateDiscunt API: Updates a discount of a branch.
+    Requires two query parameters
+    1. instituteId
+    2. discountId
+*getDiscount API: Retrieves and sends a discount of a branch.
+    Requires two query parameters
+    1. instituteId
+    2. discountId
+*getDiscounts API: Retrieves and sends all the discount of a branch.
+    Requires "branchId" inside "req.param".
+
+*addReciept API: Add Reciept of branch. Requires "branchId" inside "req.param".
+
+*deleteReciept API
+*updateReciept API
+*getReciept API
+*getReciepts API
+
+1.4 student.js
+
+*addStudent API: Adds the student. The "req.body" is validated against joi schema named "addStudent".
+
+*getAllStudent: Retrieves and sends all the students belongs to the institude.
+    Requires "instituteId" inside "req.param".
+
+*getOneStudent: Retrieves single student.
+    Requires the following query parameters.
+    1. instituteId
+    2. studentEmail
+    3. anouncement(boolean) (Optional): Informs the API whether you want to get an announcement along with students.
+
+*updateStudent: Updates the student.
+     Requires the following query parameters.
+    1. instituteId
+    2. studentEmail
+
+*deleteStudent: Deletes the student.
+     Requires the following query parameters.
+    1. instituteId
+    2. studentEmail
+
+1.5 schedule.js
+
+*addSchedule: Adds schedule. The "req.body" is validated against joi schema named "addStuddent".
+
+*deleteStudent: Deletes the schedule.
+    Requires the following query parameters.
+    1.instituteId
+    2.batchCode
+
+*getSchedule: Retrieves single or multiple schedules depending upon query parameter passed.
+    Requires following query parameters
+    1. institudeId(ObjectId)
+    2. many(boolean)
+    3. batchCode(string): Only relevant when "many" is true.
+
+*updateSchedule: Updates the schedule.
+    Requires following query parameters
+    1. institudeId(ObjectId)
+    2. batchCode(string)
+
+1.6 role.js
+
+*assignRole API: API to assign the role to a user. Middleware "checkAuth" populates "req.user.role" which 
+    varifies user's authorization to assigning the role. It makes sure that only the institute will assign the role.
+ 
+
+2. Image directory
+Act as a temporary location for an image comes from the client
+
+3. Middleware directory
+
+3.1 checkAuth
+
+It is an authentication middleware. It checks and decode the JWT token and populate token's payload in "req.user"
+object.
+
+3.2 file
+This middleware is responsible to parse the file(image/pdf) comes from the client.
+Multer has been used for parsing.
+
+3.3 chechPayment(Pending)
+
+4. Model directory
+It contains the Mongoose schemas for the MongoDB database.
+4.1 institute.model.js - Institute schema
+4.2 student.model.js - student schema
+4.3 user.model.js - user's schema for registration and role assign.
+4.4 schedule.model.js - Batch's schedule schema
+
+5. routes directory
+Routes of the project have been mentioned in this directory for separation of concerns.
+
+5.1 institute.js - It contains routes for institute, course, announcement, attendance, and role-assign.
+
+5.2 student.js - It contains student routes.
+
+5.3 user.js - It contains user-related routes.
+
+6. Service directory
+It contains all the third-party service APIs like SMS and other services to assist the project.
+
+6.1 sms.js - To send SMS to the number. Uses axios library for Http request
+6.2 joi.js - It contains all the schemas to validate "req.body" object. 
+
+7. clientStore.js file
+OneTimePassword class - OTP class to store phone number and OTP in key-pairs.
+NewUser class - New User class for registration.
+
+8. config.js - It is a configuration file containing project configuration information

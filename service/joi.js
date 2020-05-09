@@ -84,6 +84,7 @@ const schema = {
       .pattern(new RegExp('^[a-zA-Z0-9]{3,30}$')).required()
     }),
 
+    //@addStudent schema
     addStudent: joi.object({
       instituteId : joi.string().required(),
       basicDetails: joi.object({
@@ -110,7 +111,8 @@ const schema = {
         nextInstallment: joi.string().allow(''),
         amountCollected: joi.string().allow(''),
         mode: joi.string().allow('')
-      })
+      }),
+      materialRecord: joi.string()
     }),
 
     addCourse: joi.object({

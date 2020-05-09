@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 // course schema
 const courseSchema = new Schema({
   name: {type: String, required: 'Branch name is requires', lowercase: true},
-  courseCode: {type: String, unique: true, required: true},
+  courseCode: {type: String, required: true},
   fees: {type: Number, get: parseString, set: parseNumber},
   discription: {type: String, default: ''},
   gst: { 
@@ -18,13 +18,13 @@ const courseSchema = new Schema({
 // batch schema
 const batchSchema = new Schema({
   course: {type: String, required: true},
-  batchCode: {type: String, unique: true, required: true},
+  batchCode: {type: String, required: true},
   description: {type: String}
 });
 
 // discount schema
 const discountSchema = new Schema({
-  discountCode: {type: String},
+  discountCode: {type: String, required: true},
   description: {type: String},
   amount: {type: Number, get: parseString, set: parseNumber}
 }, {toJSON: {getters: true}, toObject: {getters: true}});
